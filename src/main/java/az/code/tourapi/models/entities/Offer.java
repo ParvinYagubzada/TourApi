@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @IdClass(Offer.OfferPK.class)
 public class Offer {
     @Id
-    private String agencyName;
+    private String companyName;
     @Id
     private String uuid;
 
@@ -44,7 +44,7 @@ public class Offer {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OfferPK implements Serializable {
-        protected String agencyName;
+        protected String companyName;
         protected String uuid;
     }
 }

@@ -1,5 +1,6 @@
 package az.code.tourapi.models.entities;
 
+import az.code.tourapi.enums.UserRequestStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,14 +18,17 @@ public class UserRequest {
     @Id
     private String username;
     @Id
-    private String agencyName;
+    private String companyName;
     @Id
     private String uuid;
 
+    @Enumerated(EnumType.ORDINAL)
+    private UserRequestStatus status;
+
     private boolean isArchived;
 
-    @OneToOne
-    @JoinColumn(name = "request_id", referencedColumnName = "uuid")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
     private Request request;
 
     @OneToOne
@@ -41,7 +45,7 @@ public class UserRequest {
     @AllArgsConstructor
     public static class UserRequestPK implements Serializable {
         protected String username;
-        protected String agencyName;
+        protected String companyName;
         protected String uuid;
     }
 }

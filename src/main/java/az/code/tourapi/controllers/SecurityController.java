@@ -5,6 +5,7 @@ import az.code.tourapi.exceptions.LoginException;
 import az.code.tourapi.models.dtos.LoginDTO;
 import az.code.tourapi.models.dtos.RegisterDTO;
 import az.code.tourapi.security.SecurityService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class SecurityController {
 
-    SecurityService securityService;
-
-    public SecurityController(SecurityService securityService) {
-        this.securityService = securityService;
-    }
+    private final SecurityService securityService;
 
     @ExceptionHandler(LoginException.class)
     public ResponseEntity<String> handleNotFound(LoginException e) {
