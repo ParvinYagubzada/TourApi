@@ -10,11 +10,12 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
-@Table(name = "verifications")
-public class Verification {
+@Table(name = "customers")
+public class CustomerInfo {
     @Id
-    String token;
-    @OneToOne
-    @JoinColumn(name = "username", referencedColumnName = "username")
-    private User user;
+    String username;
+    String phoneNumber;
+    String firstName;
+    String lastName;
+    String userId;
 }

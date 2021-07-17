@@ -1,15 +1,17 @@
 package az.code.tourapi.models.entities;
 
-import az.code.tourapi.models.dtos.RegisterDTO;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -18,9 +20,10 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    private String userName;
+    private String username;
     private String email;
     private String name;
+    @CreationTimestamp
     private LocalDateTime registerTime;
 
 //    @OneToMany
@@ -41,11 +44,4 @@ public class User {
 //        this.registerTime = data.getRegistrationTime();
 //        this.balance = 0;
 //    }
-
-    public User(RegisterDTO data) {
-        this.userName = data.getUserName();
-        this.email = data.getEmail();
-        this.name = data.getName() + " " + data.getSurname();
-        this.registerTime = LocalDateTime.now();
-    }
 }

@@ -12,11 +12,15 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Util {
+
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     public static Pageable preparePage(Integer pageNo, Integer pageSize, String sortBy) {
         return PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
     }
@@ -33,6 +37,7 @@ public class Util {
         }
     }
 
+    //TODO: Test
     public static UserData convertToken(String auth) throws JsonProcessingException {
         UserData user = new UserData();
         String[] chunks = auth.split("\\.");
@@ -42,7 +47,7 @@ public class Util {
         if (!payload.get("email_verified").booleanValue())
             throw new EmailNotVerified();
         user.setCompanyName(payload.get("companyName").textValue());
-        user.setUserName(payload.get("preferred_username").textValue());
+        user.setUsername(payload.get("preferred_username").textValue());
         user.setFullName(payload.get("name").textValue());
         user.setEmail(payload.get("email").textValue());
         user.setRegistrationTime(

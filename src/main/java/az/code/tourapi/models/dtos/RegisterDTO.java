@@ -4,8 +4,7 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -19,7 +18,7 @@ public class RegisterDTO {
 
     @NotNull
     @Size(min = 4, max = 20, message = "Username must be at 4-20 characters long")
-    private String userName;
+    private String username;
 
     @NotNull
     @Size(min = 2, max = 30, message = "Name must be at 2-30 characters long")

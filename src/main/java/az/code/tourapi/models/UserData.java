@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class UserData {
-    private String userName;
+    private String username;
     private String companyName;
     private String fullName;
     private String email;

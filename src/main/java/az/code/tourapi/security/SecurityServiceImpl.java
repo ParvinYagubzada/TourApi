@@ -12,8 +12,10 @@ import az.code.tourapi.models.entities.Verification;
 import az.code.tourapi.repositories.UserRepository;
 import az.code.tourapi.repositories.VerificationRepository;
 import az.code.tourapi.utils.MailUtil;
+import az.code.tourapi.utils.Mappers;
 import az.code.tourapi.utils.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -36,14 +38,16 @@ import javax.ws.rs.core.Response;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
 
     @SuppressWarnings("FieldCanBeLocal")
     private final String role = "app-user";
 
-    MailUtil mail;
-    VerificationRepository verfRepo;
-    UserRepository userRepo;
+    private final MailUtil mail;
+    private final VerificationRepository verfRepo;
+    private final UserRepository userRepo;
+    private final Mappers mappers;
 
     @Value("${keycloak.auth-server-url}")
     private String authServerUrl;
@@ -64,12 +68,6 @@ public class SecurityServiceImpl implements SecurityService {
     private String verificationContext;
     @Value("${mail.auth.verification.url}")
     private String verificationUrl;
-
-    public SecurityServiceImpl(MailUtil mail, VerificationRepository verfRepo, UserRepository userRepo) {
-        this.mail = mail;
-        this.verfRepo = verfRepo;
-        this.userRepo = userRepo;
-    }
 
     @Override
     public LoginResponseDTO login(LoginDTO user) {
@@ -108,12 +106,12 @@ public class SecurityServiceImpl implements SecurityService {
 
     private void sendVerificationEmail(RegisterDTO register) {
         String token = UUID.randomUUID().toString();
-        userRepo.save(new User(register));
+        userRepo.save(mappers.registerToUser(register));
         verfRepo.save(Verification.builder()
                 .token(token)
-                .user(User.builder().userName(register.getUserName()).build()).build());
+                .user(User.builder().username(register.getUsername()).build()).build());
         mail.sendNotificationEmail(register.getEmail(), verificationSubject,
-                verificationContext.formatted(verificationUrl.formatted(token, register.getUserName())));
+                verificationContext.formatted(verificationUrl.formatted(token, register.getUsername())));
     }
 
     private UserResource changeTemporaryPassword(RegisterDTO register, UsersResource usersResource, Response response) {
@@ -130,8 +128,7 @@ public class SecurityServiceImpl implements SecurityService {
     private UserRepresentation createUser(RegisterDTO register) {
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);
-        user.setEmailVerified(true);
-        user.setUsername(register.getUserName());
+        user.setUsername(register.getUsername());
         user.setFirstName(register.getName());
         user.setLastName(register.getSurname());
         user.setEmail(register.getEmail());
