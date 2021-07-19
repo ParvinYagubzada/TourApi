@@ -1,8 +1,10 @@
 package az.code.tourapi.utils;
 
 import az.code.tourapi.models.dtos.RegisterDTO;
+import az.code.tourapi.models.entities.CustomerInfo;
 import az.code.tourapi.models.entities.Request;
 import az.code.tourapi.models.entities.User;
+import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -30,5 +32,9 @@ public class Mappers {
         request.setTravelStartDate(LocalDate.parse(dto.getTravelStartDate(), formatter));
         request.setTravelEndDate(LocalDate.parse(dto.getTravelEndDate(), formatter));
         return request;
+    }
+
+    public CustomerInfo acceptedToCustomer(AcceptedOffer acceptedOffer) {
+        return mapper.map(acceptedOffer, CustomerInfo.class);
     }
 }

@@ -1,8 +1,10 @@
 package az.code.tourapi.utils;
 
 import az.code.tourapi.models.dtos.RegisterDTO;
+import az.code.tourapi.models.entities.CustomerInfo;
 import az.code.tourapi.models.entities.Request;
 import az.code.tourapi.models.entities.User;
+import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +51,21 @@ class MappersTest {
                 .isActive(true)
                 .build();
         assertEquals(expected, mappers.rawToRequest(rawRequest));
+    }
+
+    @Test
+    void acceptedToCustomer() {
+        AcceptedOffer offer = AcceptedOffer.builder()
+                .uuid("1234").companyName("test")
+                .username("test").phoneNumber(null)
+                .firstName("test1").lastName("test2")
+                .userId("12345678")
+                .build();
+        CustomerInfo expected = CustomerInfo.builder()
+                .username("test").phoneNumber(null)
+                .firstName("test1").lastName("test2")
+                .userId("12345678")
+                .build();
+        assertEquals(expected, mappers.acceptedToCustomer(offer));
     }
 }

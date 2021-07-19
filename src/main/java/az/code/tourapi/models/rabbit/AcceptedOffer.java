@@ -1,17 +1,14 @@
-package az.code.tourapi.models.entities;
+package az.code.tourapi.models.rabbit;
 
 import lombok.*;
 
-import javax.persistence.*;
-
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
-@Entity
-@Table(name = "customers")
-public class CustomerInfo {
-    @Id
+public class AcceptedOffer {
+    String uuid;
+    String companyName;
     String username;
     String phoneNumber;
     String firstName;
