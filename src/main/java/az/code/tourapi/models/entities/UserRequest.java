@@ -40,6 +40,7 @@ public class UserRequest {
 
     @Getter
     @Setter
+    @Builder
     @EqualsAndHashCode
     @NoArgsConstructor
     @AllArgsConstructor

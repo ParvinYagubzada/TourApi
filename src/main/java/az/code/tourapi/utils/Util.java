@@ -25,10 +25,6 @@ public class Util {
         return PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
     }
 
-    public static Pageable preparePage(Integer pageNo, Integer pageSize) {
-        return PageRequest.of(pageNo, pageSize);
-    }
-
     public static <T> List<T> getResult(Page<T> pageResult) {
         if (pageResult.hasContent()) {
             return pageResult.getContent();
