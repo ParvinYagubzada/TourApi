@@ -1,9 +1,6 @@
 package az.code.tourapi.models.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Entity;
@@ -28,22 +25,7 @@ public class User {
     @CreationTimestamp
     private LocalDateTime registerTime;
 
-//    @OneToMany
-//    @JoinColumn(name = "user_username", referencedColumnName = "username")
-//    private List<Transaction> transactions;
-//    @OneToMany
-//    @JoinColumn(name = "user_username", referencedColumnName = "username")
-//    private List<Listing> listing;
-//    @OneToMany
-//    @JoinColumn(name = "user_username", referencedColumnName = "username")
-//    private List<Subscription> subscriptions;
-//
-//    public User(UserData data) {
-//        this.username = data.getUsername();
-//        this.name = data.getName();
-//        this.phoneNumber = data.getPhoneNumber();
-//        this.email = data.getEmail();
-//        this.registerTime = data.getRegistrationTime();
-//        this.balance = 0;
-//    }
+    public User(String email) {
+        this.email = email;
+    }
 }

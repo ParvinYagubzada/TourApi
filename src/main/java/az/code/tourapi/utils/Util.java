@@ -3,7 +3,6 @@ package az.code.tourapi.utils;
 import az.code.tourapi.exceptions.EmailNotVerified;
 import az.code.tourapi.exceptions.InvalidTokenFormatException;
 import az.code.tourapi.models.UserData;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,8 +34,7 @@ public class Util {
         }
     }
 
-    //TODO: Test
-    public static UserData convertToken(String auth) throws JsonProcessingException {
+    public static UserData convertToken(String auth) {
         UserData user = new UserData();
         try {
             String[] chunks = auth.split("\\.");
@@ -54,7 +52,7 @@ public class Util {
                             0,
                             ZoneOffset.ofHours(4)));
             return user;
-        } catch (IndexOutOfBoundsException | JsonParseException e) {
+        } catch (IndexOutOfBoundsException | NullPointerException | JsonProcessingException e) {
             throw new InvalidTokenFormatException();
         }
     }

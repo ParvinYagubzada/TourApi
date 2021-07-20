@@ -3,10 +3,7 @@ package az.code.tourapi.security;
 import az.code.tourapi.exceptions.InvalidVerificationToken;
 import az.code.tourapi.exceptions.LoginException;
 import az.code.tourapi.exceptions.UserNotFound;
-import az.code.tourapi.models.dtos.LoginDTO;
-import az.code.tourapi.models.dtos.LoginResponseDTO;
-import az.code.tourapi.models.dtos.RegisterDTO;
-import az.code.tourapi.models.dtos.RegisterResponseDTO;
+import az.code.tourapi.models.dtos.*;
 import az.code.tourapi.models.entities.User;
 import az.code.tourapi.models.entities.Verification;
 import az.code.tourapi.repositories.UserRepository;
@@ -14,7 +11,6 @@ import az.code.tourapi.repositories.VerificationRepository;
 import az.code.tourapi.utils.MailUtil;
 import az.code.tourapi.utils.Mappers;
 import az.code.tourapi.utils.Util;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
@@ -32,11 +28,13 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
 import java.util.*;
 
+@SuppressWarnings("DuplicatedCode")
 @Service
 @RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
@@ -62,12 +60,20 @@ public class SecurityServiceImpl implements SecurityService {
     private String adminUsername;
     @Value("${app.keycloak.password}")
     private String adminPassword;
+
     @Value("${mail.auth.verification.subject}")
     private String verificationSubject;
     @Value("${mail.auth.verification.context}")
     private String verificationContext;
     @Value("${mail.auth.verification.url}")
     private String verificationUrl;
+
+    @Value("${mail.auth.reset-password.subject}")
+    private String resetSubject;
+    @Value("${mail.auth.reset-password.context}")
+    private String resetContext;
+    @Value("${mail.auth.reset-password.url}")
+    private String resetUrl;
 
     @Override
     public LoginResponseDTO login(LoginDTO user) {
@@ -82,7 +88,7 @@ public class SecurityServiceImpl implements SecurityService {
                     authzClient.obtainAccessToken(user.getEmail(), user.getPassword());
             Util.convertToken(response.getToken());
             return LoginResponseDTO.builder().token(response.getToken()).build();
-        } catch (HttpResponseException | JsonProcessingException exception) {
+        } catch (HttpResponseException exception) {
             throw new LoginException();
         }
     }
@@ -95,7 +101,8 @@ public class SecurityServiceImpl implements SecurityService {
         UsersResource usersResource = realmResource.users();
         Response response = usersResource.create(user);
         if (response.getStatus() == 201) {
-            UserResource userResource = changeTemporaryPassword(register, usersResource, response);
+            UserResource userResource = resetPassword(register.getPassword(),
+                    usersResource.get(CreatedResponseUtil.getCreatedId(response)));
             RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
             sendVerificationEmail(register);
@@ -114,13 +121,11 @@ public class SecurityServiceImpl implements SecurityService {
                 verificationContext.formatted(verificationUrl.formatted(token, register.getUsername())));
     }
 
-    private UserResource changeTemporaryPassword(RegisterDTO register, UsersResource usersResource, Response response) {
-        String userId = CreatedResponseUtil.getCreatedId(response);
+    private UserResource resetPassword(String password, UserResource userResource) {
         CredentialRepresentation passwordCred = new CredentialRepresentation();
         passwordCred.setTemporary(false);
         passwordCred.setType(CredentialRepresentation.PASSWORD);
-        passwordCred.setValue(register.getPassword());
-        UserResource userResource = usersResource.get(userId);
+        passwordCred.setValue(password);
         userResource.resetPassword(passwordCred);
         return userResource;
     }
@@ -139,30 +144,72 @@ public class SecurityServiceImpl implements SecurityService {
         return user;
     }
 
-    private Keycloak getRealmCli() {
-        return KeycloakBuilder.builder().serverUrl(authServerUrl)
-                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
-                .username(adminUsername).password(adminPassword)
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
-    }
-
     @Override
     public String verify(String token, String username) {
-        Keycloak keycloak = getRealmCli();
-        RealmResource realmResource = keycloak.realm(realm);
-        UsersResource usersResource = realmResource.users();
+        UsersResource usersResource = getUsersResource();
         List<UserRepresentation> users = usersResource.search(username);
-        UserRepresentation search;
         if (users.size() == 0)
             throw new UserNotFound();
-        search = users.get(0);
+        UserRepresentation search = users.get(0);
         UserResource user = usersResource.get(search.getId());
         search.setEmailVerified(true);
-        Optional<Verification> verf = verfRepo.findById(token);
+        Optional<Verification> verf = verfRepo.findByTokenAndUser_Username(token, username);
         if (verf.isEmpty())
             throw new InvalidVerificationToken();
         verfRepo.delete(verf.get());
         user.update(search);
         return "User verified.";
+    }
+
+    @Override
+    public void sendResetPasswordUrl(String email) {
+        Example<User> example = Example.of(new User(email));
+        Optional<User> user;
+        if ((user = userRepo.findOne(example)).isPresent()) {
+            String token = UUID.randomUUID().toString();
+            verfRepo.save(Verification.builder()
+                    .token(token)
+                    .user(user.get()).build());
+            mail.sendNotificationEmail(email, resetSubject,
+                    resetContext.formatted(resetUrl.formatted(token, user.get().getUsername())));
+        }
+    }
+
+    @Override
+    public void changePassword(String username, UpdatePasswordDTO dto) {
+        login(new LoginDTO(username, dto.getOldPassword()));
+        resetUserPassword(username, dto.getNewPassword());
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDTO dto) {
+        Optional<Verification> verf = verfRepo.findByTokenAndUser_Username(dto.getToken(), dto.getUsername());
+        if (verf.isEmpty())
+            throw new InvalidVerificationToken();
+        verfRepo.delete(verf.get());
+        resetUserPassword(dto.getUsername(), dto.getPassword());
+    }
+
+    private void resetUserPassword(String username, String newPassword) {
+        UsersResource usersResource = getUsersResource();
+        List<UserRepresentation> users = usersResource.search(username);
+        if (users.size() == 0)
+            throw new UserNotFound();
+        UserRepresentation search = users.get(0);
+        UserResource user = usersResource.get(search.getId());
+        resetPassword(newPassword, user);
+    }
+
+    private UsersResource getUsersResource() {
+        Keycloak keycloak = getRealmCli();
+        RealmResource realmResource = keycloak.realm(realm);
+        return realmResource.users();
+    }
+
+    private Keycloak getRealmCli() {
+        return KeycloakBuilder.builder().serverUrl(authServerUrl)
+                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
+                .username(adminUsername).password(adminPassword)
+                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
     }
 }

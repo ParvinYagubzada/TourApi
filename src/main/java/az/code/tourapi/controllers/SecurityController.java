@@ -1,12 +1,17 @@
 package az.code.tourapi.controllers;
 
+import az.code.tourapi.models.UserData;
 import az.code.tourapi.models.dtos.LoginDTO;
 import az.code.tourapi.models.dtos.RegisterDTO;
+import az.code.tourapi.models.dtos.ResetPasswordDTO;
+import az.code.tourapi.models.dtos.UpdatePasswordDTO;
 import az.code.tourapi.security.SecurityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 @RestController
@@ -29,5 +34,27 @@ public class SecurityController {
     @GetMapping("/verify")
     public ResponseEntity<?> verify(@RequestParam String token, @RequestParam String username) {
         return ResponseEntity.ok(securityService.verify(token, username));
+    }
+
+    @PostMapping("/sendResetPasswordUrl")
+    public ResponseEntity<?> sendResetPasswordUrl(@RequestBody String email) {
+        securityService.sendResetPasswordUrl(email);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO dto) {
+        securityService.resetPassword(dto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RolesAllowed("user")
+    @PostMapping("/profile/changePassword")
+    public ResponseEntity<HttpStatus> changePassword(
+            @RequestAttribute("user") UserData user,
+            @RequestBody UpdatePasswordDTO dto
+    ) {
+        securityService.changePassword(user.getUsername(), dto);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

@@ -26,8 +26,9 @@ class MappersTest {
     @Test
     void registerToUser() {
         RegisterDTO dto = RegisterDTO.builder()
-                .agencyName("test").voen(1234567890).username("test1234")
-                .name("test").surname("i_am_a_tester").email("test@test.com")
+                .agencyName("test").voen(1234567890)
+                .username("test1234").email("test@test.com")
+                .name("test").surname("i_am_a_tester")
                 .password("test123456").build();
         User expected = User.builder()
                 .agencyName("test").voen(1234567890)
