@@ -13,7 +13,14 @@ public interface UserRequestRepository extends JpaRepository<UserRequest, UserRe
     @Transactional
     @Modifying
     @Query(nativeQuery = true, value =
-            "UPDATE user_requests SET customer_id = :customerId " +
+            "UPDATE user_requests SET customer_id = :customerId, status = 2 " +
             "WHERE agency_name = :agencyName AND uuid = :uuid")
     void setCustomer(String agencyName, String uuid, String customerId);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true, value =
+            "UPDATE user_requests SET is_archived = true " +
+            "WHERE agency_name = :agencyName AND username = :username AND uuid = :uuid")
+    void archive(String agencyName, String username, String uuid);
 }

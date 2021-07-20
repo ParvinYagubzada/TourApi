@@ -11,4 +11,8 @@ public interface ProfileService {
                                   Integer pageNo, Integer pageSize, String sortBy);
 
     UserRequest getRequest(String agencyName, String username, String uuid);
+
+    String archiveRequest(String agencyName, String username, String uuid);
+
+//    UserRequest makeOffer(String agencyName, String username, String uuid, OfferDTO dto);
 }

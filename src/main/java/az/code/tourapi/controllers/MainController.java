@@ -47,4 +47,23 @@ public class MainController {
     ) {
         return ResponseEntity.ok(service.getRequest(user.getAgencyName(), user.getUsername(), uuid));
     }
+
+    @RolesAllowed("user")
+    @PostMapping("/requests/{uuid}")
+    public ResponseEntity<String> archiveRequest(
+            @PathVariable String uuid,
+            @RequestAttribute("user") UserData user
+    ) {
+        return new ResponseEntity<>(service.archiveRequest(user.getAgencyName(), user.getUsername(), uuid),
+                HttpStatus.ACCEPTED);
+    }
+
+//    @RolesAllowed("user")
+//    @PostMapping("/requests/{uuid}")
+//    public ResponseEntity<UserRequest> createOffer(
+//            @PathVariable String uuid,
+//            @RequestAttribute("user") UserData user
+//    ) {
+//        return ResponseEntity.created();
+//    }
 }

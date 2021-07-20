@@ -37,4 +37,10 @@ public class ProfileServiceImpl implements ProfileService {
         return userRepo.findById(new UserRequest.UserRequestPK(username, agencyName, uuid))
                 .orElseThrow(RuntimeException::new); //TODO: Custom Exception
     }
+
+    @Override
+    public String archiveRequest(String agencyName, String username, String uuid) {
+        userRepo.archive(agencyName, username, uuid);
+        return uuid;
+    }
 }
