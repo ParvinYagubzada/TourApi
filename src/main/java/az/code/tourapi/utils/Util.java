@@ -1,7 +1,9 @@
 package az.code.tourapi.utils;
 
 import az.code.tourapi.exceptions.EmailNotVerified;
+import az.code.tourapi.exceptions.InvalidTokenFormatException;
 import az.code.tourapi.models.UserData;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,20 +38,24 @@ public class Util {
     //TODO: Test
     public static UserData convertToken(String auth) throws JsonProcessingException {
         UserData user = new UserData();
-        String[] chunks = auth.split("\\.");
-        Base64.Decoder decoder = Base64.getDecoder();
-        String data = new String(decoder.decode(chunks[1]));
-        JsonNode payload = new ObjectMapper().readValue(data, JsonNode.class);
-        if (!payload.get("email_verified").booleanValue())
-            throw new EmailNotVerified();
-        user.setAgencyName(payload.get("agency_name").textValue());
-        user.setUsername(payload.get("preferred_username").textValue());
-        user.setFullName(payload.get("name").textValue());
-        user.setEmail(payload.get("email").textValue());
-        user.setRegistrationTime(
-                LocalDateTime.ofEpochSecond(payload.get("creation_time").longValue(),
-                        0,
-                        ZoneOffset.ofHours(4)));
-        return user;
+        try {
+            String[] chunks = auth.split("\\.");
+            Base64.Decoder decoder = Base64.getDecoder();
+            String data = new String(decoder.decode(chunks[1]));
+            JsonNode payload = new ObjectMapper().readValue(data, JsonNode.class);
+            if (!payload.get("email_verified").booleanValue())
+                throw new EmailNotVerified();
+            user.setAgencyName(payload.get("agency_name").textValue());
+            user.setUsername(payload.get("preferred_username").textValue());
+            user.setFullName(payload.get("name").textValue());
+            user.setEmail(payload.get("email").textValue());
+            user.setRegistrationTime(
+                    LocalDateTime.ofEpochSecond(payload.get("creation_time").longValue(),
+                            0,
+                            ZoneOffset.ofHours(4)));
+            return user;
+        } catch (IndexOutOfBoundsException | JsonParseException e) {
+            throw new InvalidTokenFormatException();
+        }
     }
 }

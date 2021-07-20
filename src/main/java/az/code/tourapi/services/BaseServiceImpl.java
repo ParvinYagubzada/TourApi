@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class BaseServiceImpl implements BaseService {
@@ -26,7 +28,7 @@ public class BaseServiceImpl implements BaseService {
 
     @RabbitListener(queues = REQUEST_QUEUE)
     public void listenRequests(RawRequest data) {
-        requestRepo.save(mappers.rawToRequest(data));
+        requestRepo.save(mappers.rawToRequest(data, LocalTime.now()));
     }
 
     @RabbitListener(queues = STOP_QUEUE)

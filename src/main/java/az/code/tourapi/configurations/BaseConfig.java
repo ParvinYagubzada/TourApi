@@ -35,7 +35,7 @@ public class BaseConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(productServiceInterceptor);
+        registry.addInterceptor(productServiceInterceptor).excludePathPatterns("/api/v1/auth/*");
     }
 
 //    @Override

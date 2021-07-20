@@ -1,7 +1,6 @@
 package az.code.tourapi.controllers;
 
 import az.code.tourapi.enums.UserRequestStatus;
-import az.code.tourapi.exceptions.EmailNotVerified;
 import az.code.tourapi.models.UserData;
 import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.services.ProfileService;
@@ -19,11 +18,6 @@ import java.util.List;
 public class MainController {
 
     private final ProfileService service;
-
-    @ExceptionHandler(EmailNotVerified.class)
-    public ResponseEntity<String> handleNotFound(EmailNotVerified e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-    }
 
     @RolesAllowed("user")
     @GetMapping("/requests")

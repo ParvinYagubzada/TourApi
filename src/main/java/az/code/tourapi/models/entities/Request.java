@@ -32,4 +32,5 @@ public class Request {
     private Boolean isActive;
     @CreationTimestamp
     private LocalDateTime creationTime;
+    private LocalDateTime expirationTime;
 }
