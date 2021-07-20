@@ -21,7 +21,7 @@ public class User {
 
     @Id
     private String username;
-    private String companyName;
+    private String agencyName;
     private String email;
     private String name;
     @CreationTimestamp

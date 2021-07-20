@@ -36,20 +36,15 @@ public class MainController {
             @RequestParam(required = false, defaultValue = "status") String sortBy
     ) {
         return ResponseEntity.ok(service
-                .getRequests(user.getCompanyName(), user.getUsername(), isArchived, status, pageNo, pageSize, sortBy));
+                .getRequests(user.getAgencyName(), user.getUsername(), isArchived, status, pageNo, pageSize, sortBy));
     }
 
     @RolesAllowed("user")
     @GetMapping("/requests/{uuid}")
     public ResponseEntity<UserRequest> getRequest(
             @PathVariable String uuid,
-            @RequestAttribute("user") UserData user,
-            @RequestParam(required = false) UserRequestStatus status,
-            @RequestParam(required = false, defaultValue = "false") Boolean isArchived,
-            @RequestParam(required = false, defaultValue = "0") Integer pageNo,
-            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false, defaultValue = "status") String sortBy
+            @RequestAttribute("user") UserData user
     ) {
-        return ResponseEntity.ok(service.getRequest(user.getCompanyName(), user.getUsername(), uuid));
+        return ResponseEntity.ok(service.getRequest(user.getAgencyName(), user.getUsername(), uuid));
     }
 }

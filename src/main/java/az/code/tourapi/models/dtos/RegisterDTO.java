@@ -10,8 +10,8 @@ import javax.validation.constraints.*;
 @Builder(toBuilder = true)
 public class RegisterDTO {
     @NotNull
-    @Size(min = 2, max = 30, message = "Company name must be at 2-30 characters long")
-    private String companyName;
+    @Size(min = 2, max = 30, message = "Agency name must be at 2-30 characters long")
+    private String agencyName;
 
     @Digits(integer = 10, fraction = 0)
     private Integer voen;

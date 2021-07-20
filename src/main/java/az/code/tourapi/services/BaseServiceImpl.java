@@ -38,6 +38,6 @@ public class BaseServiceImpl implements BaseService {
     public void listenAcceptances(AcceptedOffer acceptedOffer) {
         CustomerInfo info = mappers.acceptedToCustomer(acceptedOffer);
         customerRepo.save(info);
-        userRepo.setCustomer(acceptedOffer.getCompanyName(), acceptedOffer.getUuid(), info.getUsername());
+        userRepo.setCustomer(acceptedOffer.getAgencyName(), acceptedOffer.getUuid(), info.getUsername());
     }
 }

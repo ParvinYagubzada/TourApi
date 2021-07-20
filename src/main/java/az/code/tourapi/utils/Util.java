@@ -42,12 +42,12 @@ public class Util {
         JsonNode payload = new ObjectMapper().readValue(data, JsonNode.class);
         if (!payload.get("email_verified").booleanValue())
             throw new EmailNotVerified();
-        user.setCompanyName(payload.get("companyName").textValue());
+        user.setAgencyName(payload.get("agency_name").textValue());
         user.setUsername(payload.get("preferred_username").textValue());
         user.setFullName(payload.get("name").textValue());
         user.setEmail(payload.get("email").textValue());
         user.setRegistrationTime(
-                LocalDateTime.ofEpochSecond(payload.get("createdDate").longValue(),
+                LocalDateTime.ofEpochSecond(payload.get("creation_time").longValue(),
                         0,
                         ZoneOffset.ofHours(4)));
         return user;

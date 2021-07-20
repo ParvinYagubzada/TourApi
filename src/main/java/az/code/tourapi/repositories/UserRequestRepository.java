@@ -14,6 +14,6 @@ public interface UserRequestRepository extends JpaRepository<UserRequest, UserRe
     @Modifying
     @Query(nativeQuery = true, value =
             "UPDATE user_requests SET customer_id = :customerId " +
-            "WHERE company_name = :companyName AND uuid = :uuid")
-    void setCustomer(String companyName, String uuid, String customerId);
+            "WHERE agency_name = :agencyName AND uuid = :uuid")
+    void setCustomer(String agencyName, String uuid, String customerId);
 }

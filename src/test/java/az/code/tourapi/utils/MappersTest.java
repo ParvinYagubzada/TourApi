@@ -24,7 +24,7 @@ class MappersTest {
     @Test
     void registerToUser() {
         RegisterDTO dto = RegisterDTO.builder()
-                .companyName("test").voen(1234567890).username("test1234")
+                .agencyName("test").voen(1234567890).username("test1234")
                 .name("test").surname("i_am_a_tester").email("test@test.com")
                 .password("test123456").build();
         User expected = User.builder()
@@ -56,7 +56,7 @@ class MappersTest {
     @Test
     void acceptedToCustomer() {
         AcceptedOffer offer = AcceptedOffer.builder()
-                .uuid("1234").companyName("test")
+                .uuid("1234").agencyName("test")
                 .username("test").phoneNumber(null)
                 .firstName("test1").lastName("test2")
                 .userId("12345678")

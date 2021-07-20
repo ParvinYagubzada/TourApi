@@ -133,7 +133,7 @@ public class SecurityServiceImpl implements SecurityService {
         user.setLastName(register.getSurname());
         user.setEmail(register.getEmail());
         user.setAttributes(Map.of(
-                "companyName", Collections.singletonList(register.getCompanyName()),
+                "agency_name", Collections.singletonList(register.getAgencyName()),
                 "voen", Collections.singletonList(register.getVoen().toString())
         ));
         return user;

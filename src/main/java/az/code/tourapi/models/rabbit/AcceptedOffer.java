@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class AcceptedOffer {
     String uuid;
-    String companyName;
+    String agencyName;
     String username;
     String phoneNumber;
     String firstName;

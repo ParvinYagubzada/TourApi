@@ -18,7 +18,7 @@ public class UserRequest {
     @Id
     private String username;
     @Id
-    private String companyName;
+    private String agencyName;
     @Id
     private String uuid;
 
@@ -46,7 +46,7 @@ public class UserRequest {
     @AllArgsConstructor
     public static class UserRequestPK implements Serializable {
         protected String username;
-        protected String companyName;
+        protected String agencyName;
         protected String uuid;
     }
 }

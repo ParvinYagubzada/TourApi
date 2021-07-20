@@ -22,19 +22,19 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRequestRepository userRepo;
 
     @Override
-    public List<UserRequest> getRequests(String companyName, String username, Boolean isArchived,
+    public List<UserRequest> getRequests(String agencyName, String username, Boolean isArchived,
                                          UserRequestStatus status, Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = preparePage(pageNo, pageSize, sortBy);
         Page<UserRequest> pageResult = userRepo.findAll(sameStatus(status)
-                .and(sameValue("companyName", companyName))
+                .and(sameValue("agencyName", agencyName))
                 .and(sameValue("username", username))
                 .and(sameValue("isArchived", isArchived)), paging);
         return getResult(pageResult);
     }
 
     @Override
-    public UserRequest getRequest(String companyName, String username, String uuid) {
-        return userRepo.findById(new UserRequest.UserRequestPK(username, companyName, uuid))
+    public UserRequest getRequest(String agencyName, String username, String uuid) {
+        return userRepo.findById(new UserRequest.UserRequestPK(username, agencyName, uuid))
                 .orElseThrow(RuntimeException::new); //TODO: Custom Exception
     }
 }
