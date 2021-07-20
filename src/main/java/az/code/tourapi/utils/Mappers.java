@@ -46,13 +46,10 @@ public class Mappers {
         LocalTime begin = LocalTime.parse(beginTimeString, timeFormatter);
         LocalTime end = LocalTime.parse(endTimeString, timeFormatter);
         if (now.isAfter(begin) && now.isBefore(end)) {
-            System.out.println("Here");
             request.setExpirationTime(LocalDate.now().atTime(now).plusHours(deadlineHours));
         } else if (now.isAfter(end)){
-            System.out.println("isAfter");
             request.setExpirationTime(begin.atDate(LocalDate.now().plusDays(1)).plusHours(deadlineHours));
         } else if (now.isBefore(begin)) {
-            System.out.println("isBefore");
             request.setExpirationTime(begin.atDate(LocalDate.now()).plusHours(deadlineHours));
         }
         return request;

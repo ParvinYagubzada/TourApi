@@ -15,7 +15,7 @@ import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
-public class BaseServiceImpl implements BaseService {
+public class QueueListenerServiceImpl implements QueueListenerService {
 
     public static final String REQUEST_QUEUE = "requestQueue";
     public static final String STOP_QUEUE = "stopQueue";

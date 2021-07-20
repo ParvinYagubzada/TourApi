@@ -34,4 +34,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> exceptionHandler(InvalidVerificationToken e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
+
+    @ExceptionHandler(UserNotFound.class)
+    public ResponseEntity<String> exceptionHandler(UserNotFound e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

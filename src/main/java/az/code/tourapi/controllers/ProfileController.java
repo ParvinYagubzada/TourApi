@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/profile")
-public class MainController {
+public class ProfileController {
 
     private final ProfileService service;
 
