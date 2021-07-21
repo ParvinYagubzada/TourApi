@@ -1,7 +1,7 @@
 package az.code.tourapi.utils;
 
 import az.code.tourapi.exceptions.EmailNotVerified;
-import az.code.tourapi.exceptions.InvalidTokenFormatException;
+import az.code.tourapi.exceptions.InvalidTokenFormat;
 import az.code.tourapi.models.UserData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -53,7 +53,7 @@ public class Util {
                             ZoneOffset.ofHours(4)));
             return user;
         } catch (IndexOutOfBoundsException | NullPointerException | JsonProcessingException e) {
-            throw new InvalidTokenFormatException();
+            throw new InvalidTokenFormat();
         }
     }
 }

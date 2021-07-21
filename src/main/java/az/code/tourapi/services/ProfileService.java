@@ -1,6 +1,8 @@
 package az.code.tourapi.services;
 
 import az.code.tourapi.enums.UserRequestStatus;
+import az.code.tourapi.models.dtos.OfferDTO;
+import az.code.tourapi.models.entities.Offer;
 import az.code.tourapi.models.entities.UserRequest;
 
 import java.util.List;
@@ -14,5 +16,5 @@ public interface ProfileService {
 
     String archiveRequest(String agencyName, String username, String uuid);
 
-//    UserRequest makeOffer(String agencyName, String username, String uuid, OfferDTO dto);
+    Offer makeOffer(String agencyName, String username, String uuid, OfferDTO dto);
 }

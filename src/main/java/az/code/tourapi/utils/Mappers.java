@@ -1,7 +1,9 @@
 package az.code.tourapi.utils;
 
+import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.dtos.RegisterDTO;
 import az.code.tourapi.models.entities.CustomerInfo;
+import az.code.tourapi.models.entities.Offer;
 import az.code.tourapi.models.entities.Request;
 import az.code.tourapi.models.entities.User;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
@@ -32,6 +34,18 @@ public class Mappers {
 
     private final ModelMapper mapper;
 
+    public CustomerInfo acceptedToCustomer(AcceptedOffer acceptedOffer) {
+        return mapper.map(acceptedOffer, CustomerInfo.class);
+    }
+
+    public Offer dtoToOffer(OfferDTO dto, String agencyName, String uuid) {
+        Offer offer = mapper.map(dto, Offer.class);
+        offer.setIsActive(true);
+        offer.setUuid(uuid);
+        offer.setAgencyName(agencyName);
+        return offer;
+    }
+
     public User registerToUser(RegisterDTO dto) {
         User user = mapper.map(dto, User.class);
         user.setName(dto.getName() + " " + dto.getSurname());
@@ -53,9 +67,5 @@ public class Mappers {
             request.setExpirationTime(begin.atDate(LocalDate.now()).plusHours(deadlineHours));
         }
         return request;
-    }
-
-    public CustomerInfo acceptedToCustomer(AcceptedOffer acceptedOffer) {
-        return mapper.map(acceptedOffer, CustomerInfo.class);
     }
 }

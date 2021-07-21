@@ -25,8 +25,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @ExceptionHandler(InvalidTokenFormatException.class)
-    public ResponseEntity<String> exceptionHandler(InvalidTokenFormatException e) {
+    @ExceptionHandler(InvalidTokenFormat.class)
+    public ResponseEntity<String> exceptionHandler(InvalidTokenFormat e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -38,5 +38,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotFound.class)
     public ResponseEntity<String> exceptionHandler(UserNotFound e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RequestNotFound.class)
+    public ResponseEntity<String> exceptionHandler(RequestNotFound e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RequestExpired.class)
+    public ResponseEntity<String> exceptionHandler(RequestExpired e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(MultipleOffers.class)
+    public ResponseEntity<String> exceptionHandler(MultipleOffers e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 }

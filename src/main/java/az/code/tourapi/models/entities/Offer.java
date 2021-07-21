@@ -8,8 +8,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,12 +23,8 @@ public class Offer {
 
     @Type(type="text")
     private String description;
-    @Type(type="text")
-    private String travelLocations;
     private String travelDates;
     private Integer price;
-    @Type(type="text")
-    private String services;
     @Type(type="text")
     private String notes;
 

@@ -2,6 +2,8 @@ package az.code.tourapi.controllers;
 
 import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.models.UserData;
+import az.code.tourapi.models.dtos.OfferDTO;
+import az.code.tourapi.models.entities.Offer;
 import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.services.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,7 @@ public class ProfileController {
     }
 
     @RolesAllowed("user")
-    @PostMapping("/requests/{uuid}")
+    @PostMapping("/archive/{uuid}")
     public ResponseEntity<String> archiveRequest(
             @PathVariable String uuid,
             @RequestAttribute("user") UserData user
@@ -52,12 +54,14 @@ public class ProfileController {
                 HttpStatus.ACCEPTED);
     }
 
-//    @RolesAllowed("user")
-//    @PostMapping("/requests/{uuid}")
-//    public ResponseEntity<UserRequest> createOffer(
-//            @PathVariable String uuid,
-//            @RequestAttribute("user") UserData user
-//    ) {
-//        return ResponseEntity.created();
-//    }
+    @RolesAllowed("user")
+    @PostMapping("/makeOffer/{uuid}")
+    public ResponseEntity<Offer> createOffer(
+            @PathVariable String uuid,
+            @RequestBody OfferDTO dto,
+            @RequestAttribute("user") UserData user
+    ) {
+        return new ResponseEntity<>(service.makeOffer(user.getAgencyName(), user.getUsername(), uuid, dto),
+                HttpStatus.CREATED);
+    }
 }

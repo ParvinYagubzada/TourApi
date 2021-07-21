@@ -1,5 +1,6 @@
 package az.code.tourapi.services;
 
+import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.models.entities.CustomerInfo;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
@@ -40,6 +41,7 @@ public class QueueListenerServiceImpl implements QueueListenerService {
     public void listenAcceptances(AcceptedOffer acceptedOffer) {
         CustomerInfo info = mappers.acceptedToCustomer(acceptedOffer);
         customerRepo.save(info);
-        userRepo.setCustomer(acceptedOffer.getAgencyName(), acceptedOffer.getUuid(), info.getUsername());
+        userRepo.setCustomer(acceptedOffer.getAgencyName(), acceptedOffer.getUuid(), info.getUsername(),
+                UserRequestStatus.ACCEPTED.ordinal());
     }
 }

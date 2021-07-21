@@ -1,7 +1,9 @@
 package az.code.tourapi.utils;
 
+import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.dtos.RegisterDTO;
 import az.code.tourapi.models.entities.CustomerInfo;
+import az.code.tourapi.models.entities.Offer;
 import az.code.tourapi.models.entities.Request;
 import az.code.tourapi.models.entities.User;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
@@ -110,5 +112,21 @@ class MappersTest {
                 .userId("12345678")
                 .build();
         assertEquals(expected, mappers.acceptedToCustomer(offer));
+    }
+
+    @Test
+    void dtoToOffer() {
+        String agencyName = "test";
+        String uuid = "a6056cf2-0be5-4742-b247-565a06a0a0d6";
+        OfferDTO dto = OfferDTO.builder()
+                .description("salary").travelDates("time")
+                .price(386).notes("sock")
+                .build();
+        Offer expected = Offer.builder()
+                .agencyName(agencyName).uuid(uuid)
+                .description("salary").travelDates("time")
+                .price(386).notes("sock").isActive(true)
+                .build();
+        assertEquals(expected, mappers.dtoToOffer(dto, agencyName, uuid));
     }
 }

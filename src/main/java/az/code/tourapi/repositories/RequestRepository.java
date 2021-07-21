@@ -10,8 +10,7 @@ public interface RequestRepository extends JpaRepository<Request, String> {
     @Transactional
     @Modifying
     @Query(nativeQuery = true, value =
-            "UPDATE requests " +
-            "SET status = FALSE " +
+            "UPDATE requests SET status = FALSE " +
             "WHERE uuid = :uuid")
     void deactivate(String uuid);
 }
