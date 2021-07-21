@@ -8,6 +8,7 @@ import az.code.tourapi.models.entities.Request;
 import az.code.tourapi.models.entities.User;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,7 @@ class MappersTest {
     Mappers mappers;
 
     @Test
+    @DisplayName("Mappers - RegisterDTO to User")
     void registerToUser() {
         RegisterDTO dto = RegisterDTO.builder()
                 .agencyName("test").voen(1234567890)
@@ -40,6 +42,7 @@ class MappersTest {
     }
 
     @Test
+    @DisplayName("Mappers - RawRequest to Request - In working hours")
     void rawToRequestWorkingHours() {
         LocalDate start = LocalDate.parse("12.12.1212", formatter);
         LocalDate endDate = LocalDate.parse("12.12.1213", formatter);
@@ -52,16 +55,8 @@ class MappersTest {
         assertEquals(expected, mappers.rawToRequest(rawRequest, now));
     }
 
-    private Request.RequestBuilder createExpectedRequest(LocalDate start, LocalDate endDate) {
-        return Request.builder()
-                .uuid("test").language("test").tourType("test")
-                .addressTo("test").addressFrom("test")
-                .travelStartDate(start).travelEndDate(endDate)
-                .travellerCount("1 man 2 men").budget(123)
-                .isActive(true);
-    }
-
     @Test
+    @DisplayName("Mappers - RawRequest to Request - Before working hours")
     void rawToRequestBeforeWorkingHours() {
         LocalDate start = LocalDate.parse("12.12.1212", formatter);
         LocalDate endDate = LocalDate.parse("12.12.1213", formatter);
@@ -76,6 +71,7 @@ class MappersTest {
     }
 
     @Test
+    @DisplayName("Mappers - RawRequest to Request - After working hours")
     void rawToRequestAfterWorkingHours() {
         LocalDate start = LocalDate.parse("12.12.1212", formatter);
         LocalDate endDate = LocalDate.parse("12.12.1213", formatter);
@@ -98,7 +94,17 @@ class MappersTest {
                 .build();
     }
 
+    private Request.RequestBuilder createExpectedRequest(LocalDate start, LocalDate endDate) {
+        return Request.builder()
+                .uuid("test").language("test").tourType("test")
+                .addressTo("test").addressFrom("test")
+                .travelStartDate(start).travelEndDate(endDate)
+                .travellerCount("1 man 2 men").budget(123)
+                .isActive(true);
+    }
+
     @Test
+    @DisplayName("Mappers - AcceptedOffer to CustomerInfo")
     void acceptedToCustomer() {
         AcceptedOffer offer = AcceptedOffer.builder()
                 .uuid("1234").agencyName("test")
@@ -115,6 +121,7 @@ class MappersTest {
     }
 
     @Test
+    @DisplayName("Mappers - OfferDTO to Offer - In working hours")
     void dtoToOffer() {
         String agencyName = "test";
         String uuid = "a6056cf2-0be5-4742-b247-565a06a0a0d6";
