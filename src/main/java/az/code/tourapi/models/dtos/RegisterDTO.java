@@ -9,6 +9,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class RegisterDTO {
+
     @NotBlank(message = "Agency name must not be null or empty")
     @Size(min = 2, max = 30, message = "Agency name must be at 2-30 characters long")
     private String agencyName;

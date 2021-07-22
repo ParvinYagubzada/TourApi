@@ -15,19 +15,21 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class OfferDTO {
-    @NotNull
-    @Size(min = 10, max = 1000, message = "Description length must be min 10 and max 1000 characters long.")
+
+    @NotNull(message = "Description must not be null")
+    @Size(min = 10, max = 1000, message = "Description length must be min 10 and max 1000 characters long")
     private String description;
 
-    @NotNull
-    @Pattern(regexp = "[1-3]\\d\\.[1-3]\\d\\.[1-2]\\d{3}")
+    @NotNull(message = "Travel dates must not be null")
+    @Pattern(regexp = "([0-3]\\d\\.((0[1-9])|(1[0-2]))\\.2\\d{3})-([0-3]\\d\\.((0[1-9])|(1[0-2]))\\.2\\d{3})",
+            message = "Travel dates must be like XX.XX.XXXX-XX.XX.XXXX format.")
     private String travelDates;
 
-    @NotNull
-    @Digits(integer = 9, fraction = 0, message = "Price can contain max 9 digits.")
+    @NotNull(message = "Price must not be null")
+    @Digits(integer = 9, fraction = 0, message = "Price can contain max 9 digits")
     private Integer price;
 
-    @NotNull
-    @Size(min = 10, max = 1000, message = "Notes length must be min 10 and max 1000 characters long.")
+    @NotNull(message = "Notes must not be null")
+    @Size(min = 10, max = 1000, message = "Notes length must be min 10 and max 1000 characters long")
     private String notes;
 }

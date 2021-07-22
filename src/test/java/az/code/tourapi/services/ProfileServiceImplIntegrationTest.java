@@ -15,17 +15,24 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @SpringBootTest
+@TestInstance(PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SuppressWarnings("SpellCheckingInspection")
 class ProfileServiceImplIntegrationTest {
 
     public static final String AGENCY_NAME = "DataFlex";
@@ -111,7 +118,10 @@ class ProfileServiceImplIntegrationTest {
     }
 
     @BeforeAll
-    public void init() {
+    public void init(@Autowired DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("triggers.sql"));
+        }
         userRepo.saveAndFlush(User.builder().username("shayne.pfannerstill").agencyName(AGENCY_NAME).voen("5344501174").email("serina.tremblay@yahoo.com").name("Cleveland Padberg").build());
         userRepo.saveAndFlush(User.builder().username("herb.mraz").agencyName("McDonald's").voen("5850888582").email("loris.cronin@hotmail.com").name("Nicolas Hammes").build());
         List<Request> requests = new ArrayList<>();

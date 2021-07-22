@@ -11,11 +11,10 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class UpdatePasswordDTO {
-    @NotNull
-    @Size(min = 6, max = 15, message = "Password must be at 6-15 characters long")
+
     String oldPassword;
 
-    @NotNull
+    @NotNull(message = "Password must not be null")
     @Size(min = 6, max = 15, message = "Password must be at 6-15 characters long")
     String newPassword;
 }

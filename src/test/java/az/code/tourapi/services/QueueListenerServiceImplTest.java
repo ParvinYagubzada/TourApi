@@ -10,19 +10,25 @@ import az.code.tourapi.repositories.RequestRepository;
 import az.code.tourapi.repositories.UserRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import az.code.tourapi.utils.Mappers;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @SpringBootTest
+@TestInstance(PER_CLASS)
+@SuppressWarnings("SpellCheckingInspection")
 class QueueListenerServiceImplTest {
 
     @Autowired
@@ -77,6 +83,13 @@ class QueueListenerServiceImplTest {
         Optional<UserRequest> request = userRequestRepo.findById(new RequestId(agencyName, uuid));
         assertTrue(request.isPresent());
         assertEquals(mappers.acceptedToCustomer(offer), request.get().getCustomer());
+    }
+
+    @BeforeAll
+    public void init(@Autowired DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("triggers.sql"));
+        }
     }
 
     @AfterEach
