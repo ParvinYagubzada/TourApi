@@ -1,24 +1,21 @@
 package az.code.tourapi.utils;
 
-import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.models.entities.UserRequest;
 import org.springframework.data.jpa.domain.Specification;
 
 public class Specifications {
-
-    public static Specification<UserRequest> sameStatus(UserRequestStatus status) {
+    public static <T> Specification<UserRequest> sameValue(String fieldName, T value) {
         return (root, query, criteriaBuilder) -> {
-            if (status != null)
-                return criteriaBuilder.equal(root.get("status"),
-                        UserRequestStatus.values()[status.ordinal()]);
+            if (value != null)
+                return criteriaBuilder.equal(root.<T> get(fieldName), value);
             return criteriaBuilder.conjunction();
         };
     }
 
-    public static <T> Specification<UserRequest> sameValue(String paramName, T name) {
+    public static <T> Specification<UserRequest> sameValueWithId(String fieldName, T value) {
         return (root, query, criteriaBuilder) -> {
-            if (name != null)
-                return criteriaBuilder.equal(root.<T> get(paramName), name);
+            if (value != null)
+                return criteriaBuilder.equal(root.get("id").<T> get(fieldName), value);
             return criteriaBuilder.conjunction();
         };
     }

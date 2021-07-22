@@ -2,10 +2,7 @@ package az.code.tourapi.utils;
 
 import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.dtos.RegisterDTO;
-import az.code.tourapi.models.entities.CustomerInfo;
-import az.code.tourapi.models.entities.Offer;
-import az.code.tourapi.models.entities.Request;
-import az.code.tourapi.models.entities.User;
+import az.code.tourapi.models.entities.*;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +38,7 @@ public class Mappers {
     public Offer dtoToOffer(OfferDTO dto, String agencyName, String uuid) {
         Offer offer = mapper.map(dto, Offer.class);
         offer.setIsActive(true);
-        offer.setUuid(uuid);
-        offer.setAgencyName(agencyName);
+        offer.setId(new RequestId(agencyName, uuid));
         return offer;
     }
 

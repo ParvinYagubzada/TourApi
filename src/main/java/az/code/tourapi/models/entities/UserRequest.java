@@ -2,51 +2,49 @@ package az.code.tourapi.models.entities;
 
 import az.code.tourapi.enums.UserRequestStatus;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldNameConstants
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "user_requests")
-@IdClass(UserRequest.UserRequestPK.class)
 public class UserRequest {
 
-    @Id
-    private String username;
-    @Id
-    private String agencyName;
-    @Id
-    private String uuid;
+    @EmbeddedId
+    RequestId id;
 
     @Enumerated(EnumType.ORDINAL)
     private UserRequestStatus status;
 
     private boolean isArchived;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    @OneToOne
+    @JoinColumn(name = "uuid", referencedColumnName = "uuid", insertable = false, updatable = false, nullable = false)
     private Request request;
 
     @OneToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "username")
     private CustomerInfo customer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumns({
+            @JoinColumn(name = "agency_name", referencedColumnName = "agency_name"),
+            @JoinColumn(name = "uuid", referencedColumnName = "uuid")
+    })
     private Offer offer;
 
-    @Getter
-    @Setter
-    @Builder
-    @EqualsAndHashCode
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UserRequestPK implements Serializable {
-        protected String username;
-        protected String agencyName;
-        protected String uuid;
+    public void setOffer(Offer offer) {
+        this.offer = offer;
+        this.status = UserRequestStatus.OFFER_MADE;
     }
+//
+//    public void setCustomer(CustomerInfo customer) {
+//        this.customer = customer;
+//        this.status = UserRequestStatus.ACCEPTED;
+//    }
 }

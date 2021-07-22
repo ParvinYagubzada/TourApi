@@ -13,8 +13,8 @@ public class RegisterDTO {
     @Size(min = 2, max = 30, message = "Agency name must be at 2-30 characters long")
     private String agencyName;
 
-    @Digits(integer = 10, fraction = 0)
-    private Integer voen;
+    @Pattern(regexp = "\\d{10}", message = "VOEN should contain only 10 digits")
+    private String voen;
 
     @NotBlank(message = "Username must not be null or empty")
     @Size(min = 4, max = 20, message = "Username must be at 4-20 characters long")

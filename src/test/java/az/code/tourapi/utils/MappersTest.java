@@ -2,10 +2,7 @@ package az.code.tourapi.utils;
 
 import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.dtos.RegisterDTO;
-import az.code.tourapi.models.entities.CustomerInfo;
-import az.code.tourapi.models.entities.Offer;
-import az.code.tourapi.models.entities.Request;
-import az.code.tourapi.models.entities.User;
+import az.code.tourapi.models.entities.*;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -30,12 +27,12 @@ class MappersTest {
     @DisplayName("Mappers - RegisterDTO to User")
     void registerToUser() {
         RegisterDTO dto = RegisterDTO.builder()
-                .agencyName("test").voen(1234567890)
+                .agencyName("test").voen("1234567890")
                 .username("test1234").email("test@test.com")
                 .name("test").surname("i_am_a_tester")
                 .password("test123456").build();
         User expected = User.builder()
-                .agencyName("test").voen(1234567890)
+                .agencyName("test").voen("1234567890")
                 .username("test1234").email("test@test.com")
                 .name("test i_am_a_tester").build();
         assertEquals(expected, mappers.registerToUser(dto));
@@ -130,7 +127,7 @@ class MappersTest {
                 .price(386).notes("sock")
                 .build();
         Offer expected = Offer.builder()
-                .agencyName(agencyName).uuid(uuid)
+                .id(new RequestId(agencyName, uuid))
                 .description("salary").travelDates("time")
                 .price(386).notes("sock").isActive(true)
                 .build();

@@ -7,6 +7,7 @@ import az.code.tourapi.models.dtos.ResetPasswordDTO;
 import az.code.tourapi.models.dtos.UpdatePasswordDTO;
 import az.code.tourapi.security.SecurityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
+@Profile("!test")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")

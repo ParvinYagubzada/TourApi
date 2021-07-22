@@ -19,7 +19,7 @@ public class User {
     @Id
     private String username;
     private String agencyName;
-    private Integer voen;
+    private String voen;
     private String email;
     private String name;
     @CreationTimestamp

@@ -1,11 +1,16 @@
 package az.code.tourapi.models.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,32 +19,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "offers")
-@IdClass(Offer.OfferPK.class)
 public class Offer {
-    @Id
-    private String agencyName;
-    @Id
-    private String uuid;
 
-    @Type(type="text")
+    @EmbeddedId
+    RequestId id;
+
+    @Type(type = "text")
     private String description;
     private String travelDates;
     private Integer price;
-    @Type(type="text")
+    @Type(type = "text")
     private String notes;
 
     @Column(name = "status")
     private Boolean isActive;
     @CreationTimestamp
     private LocalDateTime creationTime;
-
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OfferPK implements Serializable {
-        protected String agencyName;
-        protected String uuid;
-    }
 }

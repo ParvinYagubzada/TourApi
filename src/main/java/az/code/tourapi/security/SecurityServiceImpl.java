@@ -28,6 +28,7 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ import java.util.*;
 
 @SuppressWarnings("DuplicatedCode")
 @Service
+@Profile("!test")
 @RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
 
@@ -139,7 +141,7 @@ public class SecurityServiceImpl implements SecurityService {
         user.setEmail(register.getEmail());
         user.setAttributes(Map.of(
                 "agency_name", Collections.singletonList(register.getAgencyName()),
-                "voen", Collections.singletonList(register.getVoen().toString())
+                "voen", Collections.singletonList(register.getVoen())
         ));
         return user;
     }

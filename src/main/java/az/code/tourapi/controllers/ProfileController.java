@@ -3,7 +3,6 @@ package az.code.tourapi.controllers;
 import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.models.UserData;
 import az.code.tourapi.models.dtos.OfferDTO;
-import az.code.tourapi.models.entities.Offer;
 import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.services.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class ProfileController {
             @RequestParam(required = false, defaultValue = "status") String sortBy
     ) {
         return ResponseEntity.ok(service
-                .getRequests(user.getAgencyName(), user.getUsername(), isArchived, status, pageNo, pageSize, sortBy));
+                .getRequests(user.getAgencyName(), isArchived, status, pageNo, pageSize, sortBy));
     }
 
     @RolesAllowed("user")
@@ -41,7 +40,7 @@ public class ProfileController {
             @PathVariable String uuid,
             @RequestAttribute("user") UserData user
     ) {
-        return ResponseEntity.ok(service.getRequest(user.getAgencyName(), user.getUsername(), uuid));
+        return ResponseEntity.ok(service.getRequest(user.getAgencyName(), uuid));
     }
 
     @RolesAllowed("user")
@@ -50,18 +49,18 @@ public class ProfileController {
             @PathVariable String uuid,
             @RequestAttribute("user") UserData user
     ) {
-        return new ResponseEntity<>(service.archiveRequest(user.getAgencyName(), user.getUsername(), uuid),
+        return new ResponseEntity<>(service.archiveRequest(user.getAgencyName(), uuid),
                 HttpStatus.ACCEPTED);
     }
 
     @RolesAllowed("user")
     @PostMapping("/makeOffer/{uuid}")
-    public ResponseEntity<Offer> createOffer(
+    public ResponseEntity<UserRequest> createOffer(
             @PathVariable String uuid,
             @RequestBody OfferDTO dto,
             @RequestAttribute("user") UserData user
     ) {
-        return new ResponseEntity<>(service.makeOffer(user.getAgencyName(), user.getUsername(), uuid, dto),
+        return new ResponseEntity<>(service.makeOffer(user.getAgencyName(), uuid, dto),
                 HttpStatus.CREATED);
     }
 }
