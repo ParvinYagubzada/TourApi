@@ -36,8 +36,8 @@ BEGIN
             FOR row IN SELECT username, agency_name FROM users
                 LOOP
                     UPDATE user_requests
-                    SET status = 3
-                    WHERE uuid = old.uuid;
+                    SET status = 3, is_archived = true
+                    WHERE uuid = old.uuid AND status = 0;
                 END LOOP;
         END IF;
     END IF;

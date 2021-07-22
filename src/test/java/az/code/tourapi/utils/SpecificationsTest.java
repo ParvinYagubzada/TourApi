@@ -37,6 +37,30 @@ class SpecificationsTest {
     @Autowired
     private RequestRepository requestRepo;
 
+    @Test
+    @DisplayName("Specifications - sameValueWithId() - agencyName")
+    void sameValueWithId() {
+        List<UserRequest> requests = userRequestRepo.findAll(Specifications
+                .sameValueWithId(RequestId.Fields.agencyName, "DataFlex"));
+        assertThat(requests).hasSize(30);
+    }
+
+    @Test
+    @DisplayName("Specifications - sameValue() - status")
+    void sameValue_status() {
+        List<UserRequest> requests = userRequestRepo.findAll(Specifications
+                .sameValue(UserRequest.Fields.status, UserRequestStatus.NEW_REQUEST));
+        assertThat(requests).hasSize(600);
+    }
+
+    @Test
+    @DisplayName("Specifications - sameValue() - isArchived")
+    void sameValue_isArchived() {
+        List<UserRequest> requests = userRequestRepo.findAll(Specifications
+                .sameValue(UserRequest.Fields.isArchived, false));
+        assertThat(requests).hasSize(600);
+    }
+
     @BeforeEach
     public void init() {
         List<User> users = new ArrayList<>();
@@ -98,29 +122,5 @@ class SpecificationsTest {
         userRequestRepo.deleteAll();
         requestRepo.deleteAll();
         userRepo.deleteAll();
-    }
-
-    @Test
-    @DisplayName("Specifications - sameValueWithId() - agencyName")
-    void sameValueWithId() {
-        List<UserRequest> requests = userRequestRepo.findAll(Specifications
-                .sameValueWithId(RequestId.Fields.agencyName, "DataFlex"));
-        assertThat(requests).hasSize(30);
-    }
-
-    @Test
-    @DisplayName("Specifications - sameValue() - status")
-    void sameValue_status() {
-        List<UserRequest> requests = userRequestRepo.findAll(Specifications
-                .sameValue(UserRequest.Fields.status, UserRequestStatus.NEW_REQUEST));
-        assertThat(requests).hasSize(600);
-    }
-
-    @Test
-    @DisplayName("Specifications - sameValue() - isArchived")
-    void sameValue_isArchived() {
-        List<UserRequest> requests = userRequestRepo.findAll(Specifications
-                .sameValue(UserRequest.Fields.isArchived, false));
-        assertThat(requests).hasSize(600);
     }
 }

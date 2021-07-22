@@ -31,8 +31,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final Mappers mappers;
 
     @Override
-    public List<UserRequest> getRequests(String agencyName, Boolean isArchived,
-                                         UserRequestStatus status, Integer pageNo, Integer pageSize, String sortBy) {
+    public List<UserRequest> getRequests(String agencyName, Boolean isArchived, UserRequestStatus status,
+                                         Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = preparePage(pageNo, pageSize, sortBy);
         Page<UserRequest> pageResult = userRepo.findAll(sameValue(UserRequest.Fields.status, status)
                 .and(sameValueWithId(RequestId.Fields.agencyName, agencyName))
