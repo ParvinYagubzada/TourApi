@@ -45,7 +45,7 @@ public class ProfileController {
 
     @RolesAllowed("user")
     @PostMapping("/archive/{uuid}")
-    public ResponseEntity<String> archiveRequest(
+    public ResponseEntity<UserRequest> archiveRequest(
             @PathVariable String uuid,
             @RequestAttribute("user") UserData user
     ) {

@@ -13,7 +13,7 @@ public interface ProfileService {
 
     UserRequest getRequest(String agencyName, String uuid);
 
-    String archiveRequest(String agencyName, String uuid);
+    UserRequest archiveRequest(String agencyName, String uuid);
 
     UserRequest makeOffer(String agencyName, String uuid, OfferDTO dto);
 }

@@ -47,9 +47,11 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public String archiveRequest(String agencyName, String uuid) {
-        userRepo.archive(agencyName, uuid);
-        return uuid;
+    public UserRequest archiveRequest(String agencyName, String uuid) {
+        RequestId id = new RequestId(agencyName, uuid);
+        UserRequest userRequest = userRepo.findById(id)
+                .orElseThrow(RequestNotFound::new);
+        return userRepo.save(userRequest.setArchived(true));
     }
 
     @Override
@@ -61,8 +63,6 @@ public class ProfileServiceImpl implements ProfileService {
             throw new RequestExpired();
         if (offerRepo.existsById(id))
             throw new MultipleOffers();
-        userRequest.setOffer(mappers.dtoToOffer(dto, agencyName, uuid));
-        userRepo.save(userRequest);
-        return userRequest;
+        return userRepo.save(userRequest.setOffer(mappers.dtoToOffer(dto, agencyName, uuid)));
     }
 }

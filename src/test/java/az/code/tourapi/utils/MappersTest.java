@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MappersTest {
 
     @Autowired
-    Mappers mappers;
+    private Mappers mappers;
 
     @Test
     @DisplayName("Mappers - RegisterDTO to User")

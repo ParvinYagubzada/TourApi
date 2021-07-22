@@ -2,6 +2,7 @@ package az.code.tourapi.utils;
 
 import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.models.entities.RequestId;
+import az.code.tourapi.models.entities.User;
 import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.models.rabbit.RawRequest;
 import az.code.tourapi.repositories.RequestRepository;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,18 +26,41 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpecificationsTest {
 
     @Autowired
-    Mappers mappers;
+    private Mappers mappers;
 
     @Autowired
-    UserRequestRepository userRequestRepo;
+    private UserRequestRepository userRequestRepo;
 
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
+
     @Autowired
-    RequestRepository requestRepo;
+    private RequestRepository requestRepo;
 
     @BeforeEach
     public void init() {
+        List<User> users = new ArrayList<>();
+        users.add(User.builder().username("shayne.pfannerstill").agencyName("DataFlex").voen("5344501174").email("serina.tremblay@yahoo.com").name("Cleveland Padberg").build());
+        users.add(User.builder().username("herb.mraz").agencyName("dc").voen("5850888582").email("loris.cronin@hotmail.com").name("Nicolas Hammes").build());
+        users.add(User.builder().username("serena.russel").agencyName("Frege").voen("6414273415").email("marilou.breitenberg@yahoo.com").name("Marni Donnelly").build());
+        users.add(User.builder().username("son.williamson").agencyName("SenseTalk").voen("8638201521").email("joanne.reilly@hotmail.com").name("Cinda Hodkiewicz").build());
+        users.add(User.builder().username("lakeshia.mccullough").agencyName("ELAN").voen("8068657091").email("van.jenkins@gmail.com").name("Dr. Rogelio Champlin").build());
+        users.add(User.builder().username("clair.dubuque").agencyName("CHIP-8").voen("0108502155").email("margarito.trantow@yahoo.com").name("Miss Jarod Jacobson").build());
+        users.add(User.builder().username("maryellen.hagenes").agencyName("Visual Fortran").voen("0858633333").email("sherika.abshire@gmail.com").name("Mrs. Tameka Feil").build());
+        users.add(User.builder().username("clemmie.deckow").agencyName("Go!").voen("5875386308").email("rigoberto.buckridge@hotmail.com").name("Harrison Blick").build());
+        users.add(User.builder().username("jeffrey.mckenzie").agencyName("PCF").voen("7647283353").email("erna.stiedemann@yahoo.com").name("Bennett Hahn").build());
+        users.add(User.builder().username("jordon.reinger").agencyName("Agora").voen("5114735303").email("josh.fahey@hotmail.com").name("Dominick Hoeger V").build());
+        users.add(User.builder().username("fred.mcglynn").agencyName("ABAP").voen("3985556599").email("ned.lang@gmail.com").name("Aleisha Hilll").build());
+        users.add(User.builder().username("bud.watsica").agencyName("Agilent VEE").voen("6730063344").email("danuta.runolfsdottir@yahoo.com").name("Miss Sima Heaney").build());
+        users.add(User.builder().username("fay.hane").agencyName("chomski").voen("4261686915").email("leroy.hane@gmail.com").name("Dr. Michele Walsh").build());
+        users.add(User.builder().username("sylvia.harber").agencyName("Joule").voen("8646187115").email("lavone.heller@hotmail.com").name("Jerold Mraz V").build());
+        users.add(User.builder().username("delia.purdy").agencyName("Lingo").voen("5232638087").email("deangelo.beier@hotmail.com").name("Porsha Pfeffer").build());
+        users.add(User.builder().username("ivana.boyer").agencyName("Lustre").voen("4648242348").email("chi.parker@yahoo.com").name("Jere Wolff DVM").build());
+        users.add(User.builder().username("fritz.gerlach").agencyName("Maple").voen("0786055003").email("sunday.funk@yahoo.com").name("Wilton O'Kon Jr.").build());
+        users.add(User.builder().username("prince.rosenbaum").agencyName("OpenCL").voen("6525426188").email("yasmine.skiles@hotmail.com").name("Willow Harber").build());
+        users.add(User.builder().username("beatriz.torp").agencyName("Visual Basic").voen("3182253760").email("karleen.kuvalis@gmail.com").name("Rosalyn Price").build());
+        users.add(User.builder().username("cheryl.fay").agencyName("LabVIEW").voen("7888394856").email("jarrod.hand@yahoo.com").name("Antoinette Feest").build());
+        userRepo.saveAllAndFlush(users);
         requestRepo.save(mappers.rawToRequest(new RawRequest("6a2bb2f2-5162-4242-897f-30eb145229d4", "RU", "Black Gate", "Gladden Fields", "Cirith Ungol", "28.04.1981", "24.08.1959", "206", "457"), LocalTime.parse("20:48:24.120550859")));
         requestRepo.save(mappers.rawToRequest(new RawRequest("7444627a-f71c-4f23-ae80-d5f00c7eb958", "EN", "Warning beacons of Gondor", "Núath", "Tol Galen", "21.07.2002", "04.03.1993", "571", "730"), LocalTime.parse("18:32:18.020888525")));
         requestRepo.save(mappers.rawToRequest(new RawRequest("cd787f5f-5269-47cf-9828-2daa49ad6ba6", "AZ", "Black Gate", "Henneth Annûn", "Barad-dûr", "19.06.1995", "08.01.2000", "132", "672"), LocalTime.parse("23:48:42.300904493")));
@@ -72,6 +97,7 @@ class SpecificationsTest {
     public void clean() {
         userRequestRepo.deleteAll();
         requestRepo.deleteAll();
+        userRepo.deleteAll();
     }
 
     @Test
