@@ -5,6 +5,8 @@ import az.code.tourapi.models.dtos.RegisterDTO;
 import az.code.tourapi.models.entities.*;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
+import az.code.tourapi.security.AuthConfig;
+import az.code.tourapi.security.SecurityServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,9 +24,9 @@ public class Mappers {
 
     public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    @Value("${app.begin_time}")
+    @Value("${app.start-time}")
     String beginTimeString;
-    @Value("${app.end_time}")
+    @Value("${app.end-time}")
     String endTimeString;
     @Value("${app.deadline}")
     Integer deadlineHours;
@@ -33,6 +35,10 @@ public class Mappers {
 
     public CustomerInfo acceptedToCustomer(AcceptedOffer acceptedOffer) {
         return mapper.map(acceptedOffer, CustomerInfo.class);
+    }
+
+    public SecurityServiceImpl configToService(AuthConfig config) {
+        return mapper.map(config, SecurityServiceImpl.class);
     }
 
     public Offer dtoToOffer(OfferDTO dto, String agencyName, String uuid) {

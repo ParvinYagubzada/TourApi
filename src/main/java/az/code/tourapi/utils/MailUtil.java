@@ -5,8 +5,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-@Profile("!test")
 @Component
+@Profile("!test")
 public class MailUtil {
 
     private final JavaMailSender mailSender;

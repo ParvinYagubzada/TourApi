@@ -21,6 +21,12 @@ spring:
     hibernate:
       ddl-auto: update
 
+  mvc:
+    format:
+      date: dd.MM.yyyy
+      time: HH:mm:ss
+      date-time: dd.MM.yyyy HH:mm:ss
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -30,3 +36,26 @@ spring:
     properties.mail.smtp.starttls.enable: true
     properties.mail.properties.mail.transport.protocol: smtp
     properties.mail.debug: true
+
+auth:
+  mails:
+    verification:
+      subject: Tour.tap account verification
+      context: Please click this link (%s) to verify your account.
+      urls:
+        verification-url: http://localhost:8000/api/v1/auth/verify?token=%s&username=%s
+    reset-password:
+      subject: Tour.tap account reset password
+      context: Please click this link (%s) to reset your account password.
+      urls:
+        reset-url: http://localhost:8000/api/v1/auth/resetPassword?token=%s&username=%s
+  users:
+    admin:
+      username: parvinyy@code.edu.az
+      password: 3262015
+
+app:
+  start-time: "09:00:00"
+  end-time: "19:00:00"
+  deadline: 8
+  expiration-check-duration: PT1H

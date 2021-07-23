@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "app.start-time",
+      "type": "java.lang.String",
+      "description": "Start time of work.",
+      "defaultValue": "09:00:00"
+    },
+    {
+      "name": "app.end-time",
+      "type": "java.lang.String",
+      "description": "End time of work.",
+      "defaultValue": "19:00:00"
+    },
+    {
+      "name": "app.deadline",
+      "type": "java.lang.Integer",
+      "description": "Deadline of requests.",
+      "defaultValue": 8
+    },
+    {
+      "name": "app.expiration-check-duration",
+      "type": "java.lang.String",
+      "description": "Delay duration of expiration date-time checker.",
+      "defaultValue": "PT1H"
+    }
+  ]
+}

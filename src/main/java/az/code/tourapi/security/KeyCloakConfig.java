@@ -1,5 +1,6 @@
 package az.code.tourapi.security;
 
+import az.code.tourapi.utils.Mappers;
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -7,6 +8,7 @@ import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurer
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,5 +44,20 @@ public class KeyCloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Bean
     public KeycloakConfigResolver KeycloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver();
+    }
+
+    @Bean
+    @Profile("!test")
+    public SecurityService createSecurityService(AuthConfig config, Mappers mappers) {
+        SecurityServiceImpl service = mappers.configToService(config);
+        service.setAdminUsername(config.getUsers().get("admin").getUsername());
+        service.setAdminPassword(config.getUsers().get("admin").getPassword());
+        service.setVerificationSubject(config.getMails().get("verification").getSubject());
+        service.setVerificationContext(config.getMails().get("verification").getContext());
+        service.setVerificationUrl(config.getMails().get("verification").getUrls().get("verification-url"));
+        service.setResetSubject(config.getMails().get("reset-password").getSubject());
+        service.setResetContext(config.getMails().get("reset-password").getContext());
+        service.setResetUrl(config.getMails().get("reset-password").getUrls().get("reset-url"));
+        return service;
     }
 }

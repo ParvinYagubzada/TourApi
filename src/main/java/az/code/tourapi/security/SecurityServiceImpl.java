@@ -11,7 +11,7 @@ import az.code.tourapi.repositories.VerificationRepository;
 import az.code.tourapi.utils.MailUtil;
 import az.code.tourapi.utils.Mappers;
 import az.code.tourapi.utils.Util;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -27,54 +27,35 @@ import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Example;
-import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
 import java.util.*;
 
 @SuppressWarnings("DuplicatedCode")
-@Service
-@Profile("!test")
-@RequiredArgsConstructor
+@Setter
 public class SecurityServiceImpl implements SecurityService {
 
     @SuppressWarnings("FieldCanBeLocal")
-    private final String role = "app-user";
+    private String role;
 
-    private final MailUtil mail;
-    private final VerificationRepository verfRepo;
-    private final UserRepository userRepo;
-    private final Mappers mappers;
+    private MailUtil mail;
+    private VerificationRepository verfRepo;
+    private UserRepository userRepo;
+    private Mappers mappers;
 
-    @Value("${keycloak.auth-server-url}")
     private String authServerUrl;
-    @Value("${keycloak.realm}")
     private String realm;
-    @Value("${keycloak.resource}")
     private String clientId;
-    @Value("${keycloak.credentials.secret}")
     private String clientSecret;
 
-    @Value("${app.keycloak.username}")
     private String adminUsername;
-    @Value("${app.keycloak.password}")
     private String adminPassword;
-
-    @Value("${mail.auth.verification.subject}")
     private String verificationSubject;
-    @Value("${mail.auth.verification.context}")
     private String verificationContext;
-    @Value("${mail.auth.verification.url}")
     private String verificationUrl;
-
-    @Value("${mail.auth.reset-password.subject}")
     private String resetSubject;
-    @Value("${mail.auth.reset-password.context}")
     private String resetContext;
-    @Value("${mail.auth.reset-password.url}")
     private String resetUrl;
 
     @Override

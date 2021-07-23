@@ -9,7 +9,7 @@ BEGIN
     IF (TG_OP = ''INSERT'') THEN
         FOR row IN SELECT username, agency_name FROM users
             LOOP
-                INSERT INTO user_requests(agency_name, uuid, is_archived, status, customer_id)
+                INSERT INTO user_requests
                 VALUES (row.agency_name, new.uuid, FALSE, 0, NULL);
             END LOOP;
     END IF;

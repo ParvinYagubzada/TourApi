@@ -24,6 +24,46 @@ class MappersTest {
     private Mappers mappers;
 
     @Test
+    @DisplayName("Mappers - AcceptedOffer to CustomerInfo")
+    void acceptedToCustomer() {
+        AcceptedOffer offer = AcceptedOffer.builder()
+                .uuid("1234").agencyName("test")
+                .username("test").phoneNumber(null)
+                .firstName("test1").lastName("test2")
+                .userId("12345678")
+                .build();
+        CustomerInfo expected = CustomerInfo.builder()
+                .username("test").phoneNumber(null)
+                .firstName("test1").lastName("test2")
+                .userId("12345678")
+                .build();
+        assertEquals(expected, mappers.acceptedToCustomer(offer));
+    }
+
+    @Test
+    @DisplayName("Mappers - AuthConfig to SecurityServiceImpl")
+    void configToService() {
+        //TODO: Implement if you have free time.
+    }
+
+    @Test
+    @DisplayName("Mappers - OfferDTO to Offer - In working hours")
+    void dtoToOffer() {
+        String agencyName = "test";
+        String uuid = "a6056cf2-0be5-4742-b247-565a06a0a0d6";
+        OfferDTO dto = OfferDTO.builder()
+                .description("salary").travelDates("time")
+                .price(386).notes("sock")
+                .build();
+        Offer expected = Offer.builder()
+                .id(new RequestId(agencyName, uuid))
+                .description("salary").travelDates("time")
+                .price(386).notes("sock").isActive(true)
+                .build();
+        assertEquals(expected, mappers.dtoToOffer(dto, agencyName, uuid));
+    }
+
+    @Test
     @DisplayName("Mappers - RegisterDTO to User")
     void registerToUser() {
         RegisterDTO dto = RegisterDTO.builder()
@@ -98,39 +138,5 @@ class MappersTest {
                 .travelStartDate(start).travelEndDate(endDate)
                 .travellerCount("1 man 2 men").budget(123)
                 .isActive(true);
-    }
-
-    @Test
-    @DisplayName("Mappers - AcceptedOffer to CustomerInfo")
-    void acceptedToCustomer() {
-        AcceptedOffer offer = AcceptedOffer.builder()
-                .uuid("1234").agencyName("test")
-                .username("test").phoneNumber(null)
-                .firstName("test1").lastName("test2")
-                .userId("12345678")
-                .build();
-        CustomerInfo expected = CustomerInfo.builder()
-                .username("test").phoneNumber(null)
-                .firstName("test1").lastName("test2")
-                .userId("12345678")
-                .build();
-        assertEquals(expected, mappers.acceptedToCustomer(offer));
-    }
-
-    @Test
-    @DisplayName("Mappers - OfferDTO to Offer - In working hours")
-    void dtoToOffer() {
-        String agencyName = "test";
-        String uuid = "a6056cf2-0be5-4742-b247-565a06a0a0d6";
-        OfferDTO dto = OfferDTO.builder()
-                .description("salary").travelDates("time")
-                .price(386).notes("sock")
-                .build();
-        Offer expected = Offer.builder()
-                .id(new RequestId(agencyName, uuid))
-                .description("salary").travelDates("time")
-                .price(386).notes("sock").isActive(true)
-                .build();
-        assertEquals(expected, mappers.dtoToOffer(dto, agencyName, uuid));
     }
 }

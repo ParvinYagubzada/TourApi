@@ -11,3 +11,9 @@ spring:
 
   profiles:
     active: test
+
+app:
+  start-time: "09:00:00"
+  end-time: "19:00:00"
+  deadline: 8
+  expiration-check-duration: PT1H
