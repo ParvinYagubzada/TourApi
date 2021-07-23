@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,7 @@ public class ProfileController {
     public ResponseEntity<List<UserRequest>> getRequests(
             @RequestAttribute("user") UserData user,
             @RequestParam(required = false) UserRequestStatus status,
-            @RequestParam(required = false, defaultValue = "false") Boolean isArchived,
+            @RequestParam(required = false) Boolean isArchived,
             @RequestParam(required = false, defaultValue = "0") Integer pageNo,
             @RequestParam(required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(required = false, defaultValue = "status") String sortBy
@@ -59,7 +60,7 @@ public class ProfileController {
             @PathVariable String uuid,
             @RequestBody OfferDTO dto,
             @RequestAttribute("user") UserData user
-    ) {
+    ) throws IOException {
         return new ResponseEntity<>(service.makeOffer(user.getAgencyName(), uuid, dto),
                 HttpStatus.CREATED);
     }

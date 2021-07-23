@@ -19,6 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -156,7 +157,13 @@ class ProfileServiceImplIntegrationTest {
         requests.add(mappers.rawToRequest(new RawRequest("63f2f394-1ba3-492b-ba6a-9cfe205958bf", "RU", "Coldfells", "Black Gate", "Helm's Deep", "03.09.2002", "05.03.1978", "618", "671"), LocalTime.parse("03:23:36.116986435")));
         requests.add(mappers.rawToRequest(new RawRequest("f63e789b-109d-45e2-8ea9-d22b86814143", "RU", "Rivendell", "Nargothrond", "Tol Morwen", "30.12.1963", "06.11.1978", "721", "610"), LocalTime.parse("00:23:01.379504034")));
         requestRepo.saveAllAndFlush(requests);
-        IntStream.range(0, 20).forEach(value -> service.makeOffer(AGENCY_NAME, requests.get(value).getUuid(), createOffer()));
+        IntStream.range(0, 20).forEach(value -> {
+            try {
+                service.makeOffer(AGENCY_NAME, requests.get(value).getUuid(), createOffer());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         IntStream.range(10, 20).forEach(value -> listenerService.listenAcceptances(createAccepted(requests.get(value).getUuid())));
         IntStream.of(0, 1, 10, 11, 20, 21).forEach(value -> listenerService.listenDeactivations(requests.get(value).getUuid()));
     }

@@ -11,13 +11,18 @@ import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.repositories.OfferRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import az.code.tourapi.utils.Mappers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,12 +42,14 @@ class ProfileServiceImplTest {
     private OfferRepository offerRepo;
     @Mock
     private Mappers mappers;
+    @Mock
+    private RabbitTemplate template;
 
     private ProfileService service;
 
     @BeforeEach
     void init() {
-        service = new ProfileServiceImpl(userRepo, offerRepo, mappers);
+        service = new ProfileServiceImpl(template, userRepo, offerRepo, mappers);
     }
 
     @Test
@@ -83,7 +90,7 @@ class ProfileServiceImplTest {
 
     @Test
     @DisplayName("ProfileService - makeOffer - Valid")
-    void makeOffer() {
+    void makeOffer() throws IOException {
         OfferDTO dto = OfferDTO.builder()
                 .description("salary").travelDates("time")
                 .price(386).notes("sock")

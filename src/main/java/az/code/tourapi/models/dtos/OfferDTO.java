@@ -13,6 +13,11 @@ import javax.validation.constraints.*;
 @Builder(toBuilder = true)
 public class OfferDTO {
 
+    public static final String DESCRIPTION = "Description: ";
+    public static final String TRAVEL_DATES = "Travel Dates: ";
+    public static final String PRICE = "Price: ";
+    public static final String NOTES = "Notes: ";
+
     @NotBlank(message = "Description must not be null or empty")
     @Size(min = 10, max = 1000, message = "Description length must be min 10 and max 1000 characters long")
     private String description;

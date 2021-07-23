@@ -11,6 +11,9 @@ keycloak:
   credentials.secret: b5afeb36-73d2-4c85-84ee-aeb8d58abccf
 
 spring:
+  rabbitmq:
+    addresses: ${CLOUDAMQP_URL}
+
   datasource:
     url: jdbc:postgresql://192.168.0.100:5432/test
     username: postgres

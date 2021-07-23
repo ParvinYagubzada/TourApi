@@ -2,8 +2,6 @@ package az.code.tourapi.configurations;
 
 import az.code.tourapi.security.TokenInterceptor;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,16 +13,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableScheduling
 @EnableTransactionManagement
 public class BaseConfig implements WebMvcConfigurer {
-    final
-    TokenInterceptor productServiceInterceptor;
+
+    private final TokenInterceptor productServiceInterceptor;
 
     public BaseConfig(TokenInterceptor productServiceInterceptor) {
         this.productServiceInterceptor = productServiceInterceptor;
-    }
-
-    @Bean
-    public MessageConverter converter() {
-        return new Jackson2JsonMessageConverter();
     }
 
     @Bean

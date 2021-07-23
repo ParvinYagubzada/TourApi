@@ -3,20 +3,29 @@ package az.code.tourapi.utils;
 import az.code.tourapi.exceptions.EmailNotVerified;
 import az.code.tourapi.exceptions.InvalidTokenFormat;
 import az.code.tourapi.models.UserData;
+import az.code.tourapi.models.dtos.OfferDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
+
+import static az.code.tourapi.models.dtos.OfferDTO.*;
 
 public class Util {
 
@@ -32,6 +41,22 @@ public class Util {
         } else {
             return new LinkedList<>();
         }
+    }
+
+    @SneakyThrows
+    public static File createImage(OfferDTO dto) {
+        BufferedImage image = ImageIO.read(new File("images/base.jpg"));
+        Font font = new Font("Arial", Font.BOLD, 38);
+        Graphics g = image.getGraphics();
+        g.setFont(font);
+        g.setColor(Color.BLACK);
+        g.drawString(DESCRIPTION + dto.getDescription(), 50, 100);
+        g.drawString(TRAVEL_DATES + dto.getTravelDates(), 50, 300);
+        g.drawString(PRICE + dto.getPrice().toString(), 50, 500);
+        g.drawString(NOTES + dto.getNotes(), 50, 800);
+        File outputFile = new File("images/%s.jpg".formatted(UUID.randomUUID()));
+        ImageIO.write(image, "jpg", outputFile);
+        return outputFile;
     }
 
     public static UserData convertToken(String auth) {
