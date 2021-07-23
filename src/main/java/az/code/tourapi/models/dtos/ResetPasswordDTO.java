@@ -2,7 +2,7 @@ package az.code.tourapi.models.dtos;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -15,7 +15,7 @@ public class ResetPasswordDTO {
     String token;
     String username;
 
-    @NotNull(message = "Password must not be null")
+    @NotBlank(message = "Password must not be null or empty")
     @Size(min = 6, max = 15, message = "Password must be at 6-15 characters long")
     String password;
 }

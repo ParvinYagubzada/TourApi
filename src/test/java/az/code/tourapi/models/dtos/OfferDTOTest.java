@@ -31,7 +31,7 @@ class OfferDTOTest {
 
     @Test
     @DisplayName("OfferDTO - Valid")
-    public void LoginDTO_Valid() {
+    public void OfferDTO_Valid() {
         baseDTO.setDescription("This is a test Description");
         baseDTO.setTravelDates("12.01.2021-12.12.2021");
         baseDTO.setPrice(1234);
@@ -41,8 +41,8 @@ class OfferDTOTest {
     }
 
     @Test
-    @DisplayName("ResetPasswordDTO - Violated")
-    public void LoginDTO_Violated() {
+    @DisplayName("OfferDTO - Violated")
+    public void OfferDTO_Violated() {
         baseDTO.setDescription("test");
         baseDTO.setTravelDates("33.14.12");
         baseDTO.setPrice(1111111111);
@@ -63,7 +63,7 @@ class OfferDTOTest {
         assertThat(violations)
                 .hasSize(4)
                 .map(ConstraintViolation::getMessage)
-                .contains("Description must not be null", "Travel dates must not be null",
-                        "Price must not be null", "Notes must not be null");
+                .contains("Description must not be null or empty", "Travel dates must not be null",
+                        "Price must not be null", "Notes must not be null or empty");
     }
 }

@@ -33,7 +33,7 @@ class ResetPasswordDTOTest {
 
     @Test
     @DisplayName("ResetPasswordDTO - Valid")
-    public void LoginDTO_Valid() {
+    public void ResetPasswordDTO_Valid() {
         baseDTO.setPassword("123456789");
         violations = validator.validate(baseDTO);
         assertTrue(violations.isEmpty());
@@ -41,7 +41,7 @@ class ResetPasswordDTOTest {
 
     @Test
     @DisplayName("ResetPasswordDTO - Violated")
-    public void LoginDTO_Violated() {
+    public void ResetPasswordDTO_Violated() {
         baseDTO.setPassword("123");
         violations = validator.validate(baseDTO);
         assertThat(violations)
@@ -53,6 +53,6 @@ class ResetPasswordDTOTest {
         assertThat(violations)
                 .hasSize(1)
                 .map(ConstraintViolation::getMessage)
-                .contains("Password must not be null");
+                .contains("Password must not be null or empty");
     }
 }

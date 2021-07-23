@@ -51,6 +51,6 @@ class LoginDTOTest {
         assertThat(violations)
                 .hasSize(2)
                 .map(ConstraintViolation::getMessage)
-                .contains("Email must not be null", "Password must not be null");
+                .contains("Email must not be null", "Password must not be null or empty");
     }
 }
