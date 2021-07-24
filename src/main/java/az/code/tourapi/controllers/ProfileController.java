@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
 import java.io.IOException;
 import java.util.List;
 
@@ -21,7 +20,6 @@ public class ProfileController {
 
     private final ProfileService service;
 
-    @RolesAllowed("user")
     @GetMapping("/requests")
     public ResponseEntity<List<UserRequest>> getRequests(
             @RequestAttribute("user") UserData user,
@@ -35,7 +33,6 @@ public class ProfileController {
                 .getRequests(user.getAgencyName(), isArchived, status, pageNo, pageSize, sortBy));
     }
 
-    @RolesAllowed("user")
     @GetMapping("/requests/{uuid}")
     public ResponseEntity<UserRequest> getRequest(
             @PathVariable String uuid,
@@ -44,7 +41,6 @@ public class ProfileController {
         return ResponseEntity.ok(service.getRequest(user.getAgencyName(), uuid));
     }
 
-    @RolesAllowed("user")
     @PostMapping("/archive/{uuid}")
     public ResponseEntity<UserRequest> archiveRequest(
             @PathVariable String uuid,
@@ -54,7 +50,6 @@ public class ProfileController {
                 HttpStatus.ACCEPTED);
     }
 
-    @RolesAllowed("user")
     @PostMapping("/makeOffer/{uuid}")
     public ResponseEntity<UserRequest> createOffer(
             @PathVariable String uuid,

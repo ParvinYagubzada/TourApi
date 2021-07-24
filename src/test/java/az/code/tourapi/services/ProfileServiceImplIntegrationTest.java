@@ -54,22 +54,6 @@ class ProfileServiceImplIntegrationTest {
     @Autowired
     private QueueListenerService listenerService;
 
-    private static OfferDTO createOffer() {
-        return OfferDTO.builder()
-                .description("salary").travelDates("time")
-                .price(386).notes("sock")
-                .build();
-    }
-
-    private static AcceptedOffer createAccepted(String uuid) {
-        return AcceptedOffer.builder()
-                .agencyName(ProfileServiceImplIntegrationTest.AGENCY_NAME).uuid(uuid)
-                .username("test").phoneNumber(null)
-                .firstName("test1").lastName("test2")
-                .userId("12345678")
-                .build();
-    }
-
     @Test
     @Order(1)
     @DisplayName("ProfileService - getRequests - NEW_REQUEST")
@@ -167,6 +151,23 @@ class ProfileServiceImplIntegrationTest {
         IntStream.range(10, 20).forEach(value -> listenerService.listenAcceptances(createAccepted(requests.get(value).getUuid())));
         IntStream.of(0, 1, 10, 11, 20, 21).forEach(value -> listenerService.listenDeactivations(requests.get(value).getUuid()));
     }
+
+    private static OfferDTO createOffer() {
+        return OfferDTO.builder()
+                .description("salary").travelDates("time")
+                .price(386).notes("sock")
+                .build();
+    }
+
+    private static AcceptedOffer createAccepted(String uuid) {
+        return AcceptedOffer.builder()
+                .agencyName(ProfileServiceImplIntegrationTest.AGENCY_NAME).uuid(uuid)
+                .username("test").phoneNumber(null)
+                .firstName("test1").lastName("test2")
+                .userId("12345678")
+                .build();
+    }
+
 
     @AfterAll
     public void clean() {
