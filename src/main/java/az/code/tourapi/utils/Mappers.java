@@ -8,6 +8,7 @@ import az.code.tourapi.models.rabbit.RawRequest;
 import az.code.tourapi.security.AuthConfig;
 import az.code.tourapi.security.SecurityServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 
 import static az.code.tourapi.utils.Util.formatter;
 
+@Setter
 @Component
 @RequiredArgsConstructor
 public class Mappers {
@@ -25,11 +27,11 @@ public class Mappers {
     public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final ModelMapper mapper;
     @Value("${app.start-time}")
-    String beginTimeString;
+    private String beginTimeString;
     @Value("${app.end-time}")
-    String endTimeString;
+    private String endTimeString;
     @Value("${app.deadline}")
-    Integer deadlineHours;
+    private Integer deadlineHours;
 
     public CustomerInfo acceptedToCustomer(AcceptedOffer acceptedOffer) {
         return mapper.map(acceptedOffer, CustomerInfo.class);

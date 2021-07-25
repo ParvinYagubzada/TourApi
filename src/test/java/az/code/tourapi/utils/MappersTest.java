@@ -67,7 +67,7 @@ class MappersTest {
     }
 
     @Test
-    @DisplayName("Mappers - OfferDTO to Offer - In working hours")
+    @DisplayName("Mappers - OfferDTO to Offer")
     void dtoToOffer() {
         String agencyName = "test";
         String uuid = "a6056cf2-0be5-4742-b247-565a06a0a0d6";

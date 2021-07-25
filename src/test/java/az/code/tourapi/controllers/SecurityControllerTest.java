@@ -20,9 +20,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.charset.StandardCharsets;
-
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,11 +35,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 class SecurityControllerTest {
 
-    public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
-            MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            StandardCharsets.UTF_8);
+    @SuppressWarnings("SpellCheckingInspection")
+    public static final String TOKEN = ".eyJleHAiOjE2MjY5OTg2MDQsImlhdCI6MTYyNjk2MjYwNCwianRpIjoiZmJlOTdmZDYtNTNlMC00MGZkLWFkMzItZDExOTIwNjI3NjFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL2F1dGgvcmVhbG1zL1RvdXIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMmFkYTk2ZDAtNmExMC00ZThjLTg2YmQtMzQzOGE3Zjk2OWVmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidG91ci1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiN2I1NGFhMjktMWE3Yy00NDFkLWIzMDItMTNiZDQyZmIzZTFjIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiYXBwLXVzZXIiLCJkZWZhdWx0LXJvbGVzLXRvdXIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJ0b3VyLWFwcCI6eyJyb2xlcyI6WyJ1c2VyIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJjcmVhdGlvbl90aW1lIjoxNjI2OTYxOTQwOTI2LCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYWdlbmN5X25hbWUiOiJHbG9iYWwgVHJhdmVsIiwidm9lbiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiUGVydmluIFlhcXViemFkZSIsInByZWZlcnJlZF91c2VybmFtZSI6InBlcnZpbnVzZXIiLCJnaXZlbl9uYW1lIjoiUGVydmluIiwiZmFtaWx5X25hbWUiOiJZYXF1YnphZGUiLCJlbWFpbCI6InBhcnZpbnl5QGNvZGUuZWR1LmF6In0.";
+    public static final String BASE_URL = "/api/v1/auth";
+    public static final String AUTHORIZATION = "Authorization";
     public static final ObjectMapper mapper = new ObjectMapper();
+    public static final MediaType APPLICATION_JSON_UTF8 = new MediaType
+            (APPLICATION_JSON.getType(), APPLICATION_JSON.getSubtype(), UTF_8);
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,7 +54,7 @@ class SecurityControllerTest {
     }
 
     @Test
-    @DisplayName("SecurityController - login()")
+    @DisplayName("SecurityController - login() - Valid")
     void login() throws Exception {
         LoginDTO dto = LoginDTO.builder().email("test@test.com").password("12345678").build();
         LoginResponseDTO response = new LoginResponseDTO("token");
@@ -60,7 +62,7 @@ class SecurityControllerTest {
 
         when(securityService.login(dto)).thenReturn(response);
         mockMvc
-                .perform(post("/api/v1/auth/login")
+                .perform(post(BASE_URL + "/login")
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(requestJson))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
@@ -75,14 +77,14 @@ class SecurityControllerTest {
 
         when(securityService.login(dto)).thenThrow(new LoginException());
         mockMvc
-                .perform(post("/api/v1/auth/login")
+                .perform(post(BASE_URL + "/login")
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(requestJson))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("SecurityController - register()")
+    @DisplayName("SecurityController - register() - Valid")
     void register() throws Exception {
         RegisterDTO dto = RegisterDTO.builder()
                 .agencyName("test").voen("1234567890")
@@ -94,7 +96,7 @@ class SecurityControllerTest {
 
         when(securityService.register(dto)).thenReturn(response);
         mockMvc
-                .perform(post("/api/v1/auth/register")
+                .perform(post(BASE_URL + "/register")
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(requestJson))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
@@ -102,12 +104,12 @@ class SecurityControllerTest {
     }
 
     @Test
-    @DisplayName("SecurityController - verify()")
+    @DisplayName("SecurityController - verify() - Valid")
     void verify() throws Exception {
         String token = "test", username = "test", response = "User verified.";
         when(securityService.verify(token, username)).thenReturn(response);
         mockMvc
-                .perform(get("/api/v1/auth/verify")
+                .perform(get(BASE_URL + "/verify")
                         .param("token", token)
                         .param("username", username))
                 .andExpect(content().string(response))
@@ -120,7 +122,7 @@ class SecurityControllerTest {
         String token = "test", username = "test";
         when(securityService.verify(token, username)).thenThrow(new UserNotFound());
         mockMvc
-                .perform(get("/api/v1/auth/verify")
+                .perform(get(BASE_URL + "/verify")
                         .param("token", token)
                         .param("username", username))
                 .andExpect(status().isNotFound());
@@ -132,19 +134,19 @@ class SecurityControllerTest {
         String token = "test", username = "test";
         when(securityService.verify(token, username)).thenThrow(new InvalidVerificationToken());
         mockMvc
-                .perform(get("/api/v1/auth/verify")
+                .perform(get(BASE_URL + "/verify")
                         .param("token", token)
                         .param("username", username))
                 .andExpect(status().isNotAcceptable());
     }
 
     @Test
-    @DisplayName("SecurityController - sendResetPasswordUrl() ")
+    @DisplayName("SecurityController - sendResetPasswordUrl() - Valid")
     void sendResetPasswordUrl() throws Exception {
         String email = "test";
         doNothing().when(securityService).sendResetPasswordUrl(email);
         mockMvc
-                .perform(post("/api/v1/auth/sendResetPasswordUrl")
+                .perform(post(BASE_URL + "/sendResetPasswordUrl")
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(email))
                 .andExpect(status().isOk());
@@ -152,7 +154,7 @@ class SecurityControllerTest {
     }
 
     @Test
-    @DisplayName("SecurityController - resetPassword() ")
+    @DisplayName("SecurityController - resetPassword() - Valid")
     void resetPassword() throws Exception {
         ResetPasswordDTO dto = ResetPasswordDTO.builder()
                 .token("token")
@@ -162,7 +164,7 @@ class SecurityControllerTest {
 
         doNothing().when(securityService).resetPassword(dto);
         mockMvc
-                .perform(post("/api/v1/auth/resetPassword")
+                .perform(post(BASE_URL + "/resetPassword")
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(requestJson))
                 .andExpect(status().isOk());
@@ -170,8 +172,7 @@ class SecurityControllerTest {
     }
 
     @Test
-    @SuppressWarnings("SpellCheckingInspection")
-    @DisplayName("SecurityController - changePassword() ")
+    @DisplayName("SecurityController - changePassword() - Valid")
     void changePassword() throws Exception {
         String username = "pervinuser";
         UpdatePasswordDTO dto = UpdatePasswordDTO.builder()
@@ -181,9 +182,9 @@ class SecurityControllerTest {
 
         doNothing().when(securityService).changePassword(username, dto);
         mockMvc
-                .perform(post("/api/v1/auth/profile/changePassword")
+                .perform(post(BASE_URL + "/profile/changePassword")
                         .contentType(APPLICATION_JSON_UTF8)
-                        .header("Authorization", ".eyJleHAiOjE2MjY5OTg2MDQsImlhdCI6MTYyNjk2MjYwNCwianRpIjoiZmJlOTdmZDYtNTNlMC00MGZkLWFkMzItZDExOTIwNjI3NjFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL2F1dGgvcmVhbG1zL1RvdXIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMmFkYTk2ZDAtNmExMC00ZThjLTg2YmQtMzQzOGE3Zjk2OWVmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidG91ci1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiN2I1NGFhMjktMWE3Yy00NDFkLWIzMDItMTNiZDQyZmIzZTFjIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiYXBwLXVzZXIiLCJkZWZhdWx0LXJvbGVzLXRvdXIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJ0b3VyLWFwcCI6eyJyb2xlcyI6WyJ1c2VyIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJjcmVhdGlvbl90aW1lIjoxNjI2OTYxOTQwOTI2LCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYWdlbmN5X25hbWUiOiJHbG9iYWwgVHJhdmVsIiwidm9lbiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiUGVydmluIFlhcXViemFkZSIsInByZWZlcnJlZF91c2VybmFtZSI6InBlcnZpbnVzZXIiLCJnaXZlbl9uYW1lIjoiUGVydmluIiwiZmFtaWx5X25hbWUiOiJZYXF1YnphZGUiLCJlbWFpbCI6InBhcnZpbnl5QGNvZGUuZWR1LmF6In0.")
+                        .header(AUTHORIZATION, TOKEN)
                         .content(requestJson))
                 .andExpect(status().isAccepted());
         Mockito.verify(securityService, times(1)).changePassword(username, dto);

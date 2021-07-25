@@ -7,6 +7,7 @@ import az.code.tourapi.exceptions.RequestNotFound;
 import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.entities.RequestId;
 import az.code.tourapi.models.entities.UserRequest;
+import az.code.tourapi.models.entities.UserRequest.Fields;
 import az.code.tourapi.models.rabbit.RawOffer;
 import az.code.tourapi.repositories.OfferRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
@@ -41,9 +42,9 @@ public class ProfileServiceImpl implements ProfileService {
     public List<UserRequest> getRequests(String agencyName, Boolean isArchived, UserRequestStatus status,
                                          Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = preparePage(pageNo, pageSize, sortBy);
-        Page<UserRequest> pageResult = userRepo.findAll(sameValue(UserRequest.Fields.status, status)
-                .and(sameValueWithId(RequestId.Fields.agencyName, agencyName))
-                .and(sameValue(UserRequest.Fields.isArchived, isArchived)), paging);
+        Page<UserRequest> pageResult = userRepo.findAll(sameValue(Fields.status, status)
+                .and(sameValue(Fields.isArchived, isArchived))
+                .and(sameValueWithId(RequestId.Fields.agencyName, agencyName)), paging);
         return getResult(pageResult);
     }
 

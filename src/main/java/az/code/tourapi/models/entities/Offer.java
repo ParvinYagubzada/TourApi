@@ -1,5 +1,6 @@
 package az.code.tourapi.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,5 +35,6 @@ public class Offer {
     @Column(name = "status")
     private Boolean isActive;
     @CreationTimestamp
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     private LocalDateTime creationTime;
 }

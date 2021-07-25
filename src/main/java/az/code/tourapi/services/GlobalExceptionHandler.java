@@ -67,7 +67,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     @ExceptionHandler(MultipleOffers.class)
     public String exceptionHandler(MultipleOffers e) {
         return e.getMessage();

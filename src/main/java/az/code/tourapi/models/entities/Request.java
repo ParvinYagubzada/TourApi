@@ -1,5 +1,6 @@
 package az.code.tourapi.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,7 +26,9 @@ public class Request {
     private String tourType;
     private String addressTo;
     private String addressFrom;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate travelStartDate;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate travelEndDate;
     private String travellerCount;
     private Integer budget;
@@ -33,6 +36,8 @@ public class Request {
     @Column(name = "status")
     private Boolean isActive;
     @CreationTimestamp
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     private LocalDateTime creationTime;
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     private LocalDateTime expirationTime;
 }
