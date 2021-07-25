@@ -10,7 +10,6 @@ import az.code.tourapi.repositories.RequestRepository;
 import az.code.tourapi.repositories.UserRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @SpringBootTest
 @TestInstance(PER_CLASS)
-@TestMethodOrder(MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 @SuppressWarnings("SpellCheckingInspection")
 class SpecificationsTest {
 

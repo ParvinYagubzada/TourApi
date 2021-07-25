@@ -23,7 +23,7 @@ import static az.code.tourapi.utils.Util.formatter;
 public class Mappers {
 
     public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
+    private final ModelMapper mapper;
     @Value("${app.start-time}")
     String beginTimeString;
     @Value("${app.end-time}")
@@ -31,14 +31,14 @@ public class Mappers {
     @Value("${app.deadline}")
     Integer deadlineHours;
 
-    private final ModelMapper mapper;
-
     public CustomerInfo acceptedToCustomer(AcceptedOffer acceptedOffer) {
         return mapper.map(acceptedOffer, CustomerInfo.class);
     }
 
-    public SecurityServiceImpl configToService(AuthConfig config) {
-        return mapper.map(config, SecurityServiceImpl.class);
+    public User registerToUser(RegisterDTO dto) {
+        User user = mapper.map(dto, User.class);
+        user.setName(dto.getName() + " " + dto.getSurname());
+        return user;
     }
 
     public Offer dtoToOffer(OfferDTO dto, String agencyName, String uuid) {
@@ -48,10 +48,11 @@ public class Mappers {
         return offer;
     }
 
-    public User registerToUser(RegisterDTO dto) {
-        User user = mapper.map(dto, User.class);
-        user.setName(dto.getName() + " " + dto.getSurname());
-        return user;
+    public SecurityServiceImpl configToService(AuthConfig config) {
+        SecurityServiceImpl service = mapper.map(config, SecurityServiceImpl.class);
+        service.setAdminUsername(config.getUsers().get("admin").getUsername());
+        service.setAdminPassword(config.getUsers().get("admin").getPassword());
+        return service;
     }
 
     public Request rawToRequest(RawRequest dto, LocalTime now) {
@@ -63,7 +64,7 @@ public class Mappers {
         LocalTime end = LocalTime.parse(endTimeString, timeFormatter);
         if (now.isAfter(begin) && now.isBefore(end)) {
             request.setExpirationTime(LocalDate.now().atTime(now).plusHours(deadlineHours));
-        } else if (now.isAfter(end)){
+        } else if (now.isAfter(end)) {
             request.setExpirationTime(begin.atDate(LocalDate.now().plusDays(1)).plusHours(deadlineHours));
         } else if (now.isBefore(begin)) {
             request.setExpirationTime(begin.atDate(LocalDate.now()).plusHours(deadlineHours));

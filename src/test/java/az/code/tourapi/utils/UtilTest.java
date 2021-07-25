@@ -5,7 +5,9 @@ import az.code.tourapi.exceptions.InvalidTokenFormat;
 import az.code.tourapi.models.UserData;
 import az.code.tourapi.models.dtos.OfferDTO;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import static az.code.tourapi.utils.Util.convertToken;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("SpellCheckingInspection")
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class UtilTest {
 
     @Test

@@ -5,23 +5,34 @@ import az.code.tourapi.models.dtos.RegisterDTO;
 import az.code.tourapi.models.entities.*;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
+import az.code.tourapi.security.AuthConfig;
+import az.code.tourapi.security.SecurityServiceImpl;
+import az.code.tourapi.utils.representations.MailRepresentation;
+import az.code.tourapi.utils.representations.SimpleUserRepresentation;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Map;
 
 import static az.code.tourapi.utils.Mappers.timeFormatter;
 import static az.code.tourapi.utils.Util.formatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class MappersTest {
 
     @Autowired
     private Mappers mappers;
+    @Autowired
+    private AuthConfig config;
 
     @Test
     @DisplayName("Mappers - AcceptedOffer to CustomerInfo")
@@ -41,9 +52,18 @@ class MappersTest {
     }
 
     @Test
-    @DisplayName("Mappers - AuthConfig to SecurityServiceImpl")
-    void configToService() {
-        //TODO: Implement if you have free time.
+    @DisplayName("Mappers - RegisterDTO to User")
+    void registerToUser() {
+        RegisterDTO dto = RegisterDTO.builder()
+                .agencyName("test").voen("1234567890")
+                .username("test1234").email("test@test.com")
+                .name("test").surname("i_am_a_tester")
+                .password("test123456").build();
+        User expected = User.builder()
+                .agencyName("test").voen("1234567890")
+                .username("test1234").email("test@test.com")
+                .name("test i_am_a_tester").build();
+        assertEquals(expected, mappers.registerToUser(dto));
     }
 
     @Test
@@ -64,18 +84,22 @@ class MappersTest {
     }
 
     @Test
-    @DisplayName("Mappers - RegisterDTO to User")
-    void registerToUser() {
-        RegisterDTO dto = RegisterDTO.builder()
-                .agencyName("test").voen("1234567890")
-                .username("test1234").email("test@test.com")
-                .name("test").surname("i_am_a_tester")
-                .password("test123456").build();
-        User expected = User.builder()
-                .agencyName("test").voen("1234567890")
-                .username("test1234").email("test@test.com")
-                .name("test i_am_a_tester").build();
-        assertEquals(expected, mappers.registerToUser(dto));
+    @DisplayName("Mappers - AuthConfig to SecurityServiceImpl")
+    void configToService(
+            @Value("#{authConfig.authServerUrl}") String authServerUrl,
+            @Value("#{authConfig.realm}") String realm,
+            @Value("#{authConfig.clientId}") String clientId,
+            @Value("#{authConfig.clientSecret}") String clientSecret,
+            @Value("#{authConfig.mails}") Map<String, MailRepresentation> mails,
+            @Value("#{authConfig.users}") Map<String, SimpleUserRepresentation> users
+    ) {
+        SimpleUserRepresentation admin = users.get("admin");
+        SecurityServiceImpl expected = SecurityServiceImpl.builder()
+                .role("app-user")
+                .authServerUrl(authServerUrl).realm(realm).clientId(clientId).clientSecret(clientSecret)
+                .adminUsername(admin.getUsername()).adminPassword(admin.getPassword())
+                .mails(mails).build();
+        assertEquals(expected, mappers.configToService(config));
     }
 
     @Test

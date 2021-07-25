@@ -1,11 +1,13 @@
 package az.code.tourapi.controllers;
 
+import az.code.tourapi.exceptions.InvalidVerificationToken;
+import az.code.tourapi.exceptions.LoginException;
+import az.code.tourapi.exceptions.UserNotFound;
 import az.code.tourapi.models.dtos.*;
 import az.code.tourapi.security.SecurityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,8 +28,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("test-mvc")
 @WebMvcTest(SecurityController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 class SecurityControllerTest {
 
@@ -47,6 +52,7 @@ class SecurityControllerTest {
     }
 
     @Test
+    @DisplayName("SecurityController - login()")
     void login() throws Exception {
         LoginDTO dto = LoginDTO.builder().email("test@test.com").password("12345678").build();
         LoginResponseDTO response = new LoginResponseDTO("token");
@@ -62,6 +68,21 @@ class SecurityControllerTest {
     }
 
     @Test
+    @DisplayName("SecurityController - login() - UNAUTHORIZED")
+    void login_LoginException() throws Exception {
+        LoginDTO dto = LoginDTO.builder().email("test@test.com").password("12345678").build();
+        String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(dto);
+
+        when(securityService.login(dto)).thenThrow(new LoginException());
+        mockMvc
+                .perform(post("/api/v1/auth/login")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(requestJson))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("SecurityController - register()")
     void register() throws Exception {
         RegisterDTO dto = RegisterDTO.builder()
                 .agencyName("test").voen("1234567890")
@@ -81,10 +102,9 @@ class SecurityControllerTest {
     }
 
     @Test
+    @DisplayName("SecurityController - verify()")
     void verify() throws Exception {
-        String token = "test", username = "test";
-        String response = "User verified.";
-
+        String token = "test", username = "test", response = "User verified.";
         when(securityService.verify(token, username)).thenReturn(response);
         mockMvc
                 .perform(get("/api/v1/auth/verify")
@@ -95,20 +115,44 @@ class SecurityControllerTest {
     }
 
     @Test
+    @DisplayName("SecurityController - verify() - NOT FOUND")
+    void verify_UserNotFount() throws Exception {
+        String token = "test", username = "test";
+        when(securityService.verify(token, username)).thenThrow(new UserNotFound());
+        mockMvc
+                .perform(get("/api/v1/auth/verify")
+                        .param("token", token)
+                        .param("username", username))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("SecurityController - verify() - NOT ACCEPTABLE")
+    void verify_InvalidVerificationToken() throws Exception {
+        String token = "test", username = "test";
+        when(securityService.verify(token, username)).thenThrow(new InvalidVerificationToken());
+        mockMvc
+                .perform(get("/api/v1/auth/verify")
+                        .param("token", token)
+                        .param("username", username))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    @DisplayName("SecurityController - sendResetPasswordUrl() ")
     void sendResetPasswordUrl() throws Exception {
         String email = "test";
-
         doNothing().when(securityService).sendResetPasswordUrl(email);
         mockMvc
                 .perform(post("/api/v1/auth/sendResetPasswordUrl")
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(email))
                 .andExpect(status().isOk());
-        Mockito.verify(securityService, times(1))
-                .sendResetPasswordUrl(email);
+        Mockito.verify(securityService, times(1)).sendResetPasswordUrl(email);
     }
 
     @Test
+    @DisplayName("SecurityController - resetPassword() ")
     void resetPassword() throws Exception {
         ResetPasswordDTO dto = ResetPasswordDTO.builder()
                 .token("token")
@@ -126,6 +170,8 @@ class SecurityControllerTest {
     }
 
     @Test
+    @SuppressWarnings("SpellCheckingInspection")
+    @DisplayName("SecurityController - changePassword() ")
     void changePassword() throws Exception {
         String username = "pervinuser";
         UpdatePasswordDTO dto = UpdatePasswordDTO.builder()

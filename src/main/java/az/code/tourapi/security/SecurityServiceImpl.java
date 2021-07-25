@@ -11,7 +11,8 @@ import az.code.tourapi.repositories.VerificationRepository;
 import az.code.tourapi.utils.MailUtil;
 import az.code.tourapi.utils.Mappers;
 import az.code.tourapi.utils.Util;
-import lombok.Setter;
+import az.code.tourapi.utils.representations.MailRepresentation;
+import lombok.*;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -34,6 +35,11 @@ import java.util.*;
 
 @SuppressWarnings("DuplicatedCode")
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = {"mail", "verfRepo", "userRepo", "mappers"})
+@EqualsAndHashCode(exclude = {"mail", "verfRepo", "userRepo", "mappers"})
 public class SecurityServiceImpl implements SecurityService {
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -51,12 +57,8 @@ public class SecurityServiceImpl implements SecurityService {
 
     private String adminUsername;
     private String adminPassword;
-    private String verificationSubject;
-    private String verificationContext;
-    private String verificationUrl;
-    private String resetSubject;
-    private String resetContext;
-    private String resetUrl;
+
+    private Map<String, MailRepresentation> mails;
 
     @Override
     public LoginResponseDTO login(LoginDTO user) {
@@ -100,8 +102,13 @@ public class SecurityServiceImpl implements SecurityService {
         verfRepo.save(Verification.builder()
                 .token(token)
                 .user(User.builder().username(register.getUsername()).build()).build());
-        mail.sendNotificationEmail(register.getEmail(), verificationSubject,
-                verificationContext.formatted(verificationUrl.formatted(token, register.getUsername())));
+        MailRepresentation representation = mails.get("verification");
+        mail.sendNotificationEmail(register.getEmail(), representation.getSubject(),
+                representation.getContext().formatted(representation
+                        .getUrls()
+                        .get("verification-url")
+                        .formatted(token, register.getUsername())
+                ));
     }
 
     private UserResource resetPassword(String password, UserResource userResource) {
@@ -153,8 +160,13 @@ public class SecurityServiceImpl implements SecurityService {
             verfRepo.save(Verification.builder()
                     .token(token)
                     .user(user.get()).build());
-            mail.sendNotificationEmail(email, resetSubject,
-                    resetContext.formatted(resetUrl.formatted(token, user.get().getUsername())));
+            MailRepresentation representation = mails.get("reset-password");
+            mail.sendNotificationEmail(email, representation.getSubject(),
+                    representation.getContext().formatted(representation
+                            .getUrls()
+                            .get("reset-url")
+                            .formatted(token, user.get().getUsername())
+                    ));
         }
     }
 
