@@ -56,6 +56,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(OutOfWorkingHours.class)
+    public ResponseEntity<String> exceptionHandler(OutOfWorkingHours e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+    }
+
     @ExceptionHandler(RequestExpired.class)
     public ResponseEntity<String> exceptionHandler(RequestExpired e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);

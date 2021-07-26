@@ -2,6 +2,7 @@ package az.code.tourapi.services;
 
 import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.exceptions.MultipleOffers;
+import az.code.tourapi.exceptions.OutOfWorkingHours;
 import az.code.tourapi.exceptions.RequestExpired;
 import az.code.tourapi.exceptions.RequestNotFound;
 import az.code.tourapi.models.dtos.OfferDTO;
@@ -23,17 +24,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Optional;
 
+import static az.code.tourapi.TourApiApplicationTests.*;
+import static az.code.tourapi.utils.Mappers.timeFormatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @TestMethodOrder(MethodName.class)
 @ExtendWith(MockitoExtension.class)
 class ProfileServiceImplTest {
 
-    public static final String UUID = "c64808f2-8682-4a7c-91c7-16d4201438b3";
-    public static final String AGENCY_NAME = "Global Travel";
     public static final RequestId ID = new RequestId(AGENCY_NAME, UUID);
 
     @Mock
@@ -44,12 +49,16 @@ class ProfileServiceImplTest {
     private Mappers mappers;
     @Mock
     private RabbitTemplate template;
+    @Mock
+    private Clock clock;
 
-    private ProfileService service;
+    private ProfileServiceImpl service;
 
     @BeforeEach
-    void init() {
-        service = new ProfileServiceImpl(template, userRepo, offerRepo, mappers);
+    public void init() {
+        service = new ProfileServiceImpl(template, userRepo, offerRepo, mappers, clock);
+        service.setStartTimeString("09:00:00");
+        service.setEndTimeString("19:00:00");
     }
 
     @Test
@@ -91,6 +100,7 @@ class ProfileServiceImplTest {
     @Test
     @DisplayName("ProfileService - makeOffer - Valid")
     void makeOffer() throws IOException {
+        mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
         OfferDTO dto = OfferDTO.builder()
                 .description("salary").travelDates("time")
                 .price(386).notes("sock")
@@ -114,8 +124,16 @@ class ProfileServiceImplTest {
     }
 
     @Test
+    @DisplayName("ProfileService - makeOffer - OutOfWorkingHours")
+    void makeOffer_OutOfWorkingHours() {
+        mockTime(Clock.fixed(getFixedInstant("01:00:00"), SYSTEM_DEFAULT));
+        assertThrows(OutOfWorkingHours.class, () -> service.makeOffer(AGENCY_NAME, UUID, null));
+    }
+
+    @Test
     @DisplayName("ProfileService - makeOffer - RequestNotFound")
     void makeOffer_RequestNotFound() {
+        mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
         Mockito.when(userRepo.findById(ID))
                 .thenReturn(Optional.empty());
         assertThrows(RequestNotFound.class, () -> service.makeOffer(AGENCY_NAME, UUID, null));
@@ -124,6 +142,7 @@ class ProfileServiceImplTest {
     @Test
     @DisplayName("ProfileService - makeOffer - RequestExpired")
     void makeOffer_RequestExpired() {
+        mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
         Mockito.when(userRepo.findById(ID))
                 .thenReturn(Optional.of(UserRequest.builder().status(UserRequestStatus.EXPIRED).build()));
         assertThrows(RequestExpired.class, () -> service.makeOffer(AGENCY_NAME, UUID, null));
@@ -132,10 +151,20 @@ class ProfileServiceImplTest {
     @Test
     @DisplayName("ProfileService - makeOffer - MultipleOffers")
     void makeOffer_MultipleOffers() {
+        mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
         Mockito.when(userRepo.findById(ID))
                 .thenReturn(Optional.of(UserRequest.builder().status(UserRequestStatus.NEW_REQUEST).build()));
         Mockito.when(offerRepo.existsById(ID))
                 .thenReturn(true);
         assertThrows(MultipleOffers.class, () -> service.makeOffer(AGENCY_NAME, UUID, null));
+    }
+
+    private Instant getFixedInstant(String timeString) {
+        return DATE.atTime(LocalTime.parse(timeString, timeFormatter)).atZone(SYSTEM_DEFAULT).toInstant();
+    }
+
+    private void mockTime(Clock fixedClock) {
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
     }
 }

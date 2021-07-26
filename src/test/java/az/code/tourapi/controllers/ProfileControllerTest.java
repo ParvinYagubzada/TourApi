@@ -1,6 +1,7 @@
 package az.code.tourapi.controllers;
 
 import az.code.tourapi.exceptions.MultipleOffers;
+import az.code.tourapi.exceptions.OutOfWorkingHours;
 import az.code.tourapi.exceptions.RequestExpired;
 import az.code.tourapi.exceptions.RequestNotFound;
 import az.code.tourapi.models.dtos.OfferDTO;
@@ -20,23 +21,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static az.code.tourapi.TourApiApplicationTests.*;
 import static az.code.tourapi.enums.UserRequestStatus.NEW_REQUEST;
 import static az.code.tourapi.enums.UserRequestStatus.OFFER_MADE;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -50,17 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 class ProfileControllerTest {
 
-    public static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-    public static final MediaType APPLICATION_JSON_UTF8 = new MediaType
-            (APPLICATION_JSON.getType(), APPLICATION_JSON.getSubtype(), UTF_8);
-
     public static final String BASE_URL = "/api/v1/profile";
-    public static final String AUTHORIZATION = "Authorization";
-    public static final String AGENCY_NAME = "Global Travel";
-    public static final String UUID = "a46d6230-c521-46ba-9957-1bb0347370e7";
-    public static final String TOKEN = ".eyJleHAiOjE2MjY5OTg2MDQsImlhdCI6MTYyNjk2MjYwNCwianRpIjoiZmJlOTdmZDYtNTNlMC00MGZkLWFkMzItZDExOTIwNjI3NjFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL2F1dGgvcmVhbG1zL1RvdXIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMmFkYTk2ZDAtNmExMC00ZThjLTg2YmQtMzQzOGE3Zjk2OWVmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidG91ci1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiN2I1NGFhMjktMWE3Yy00NDFkLWIzMDItMTNiZDQyZmIzZTFjIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiYXBwLXVzZXIiLCJkZWZhdWx0LXJvbGVzLXRvdXIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJ0b3VyLWFwcCI6eyJyb2xlcyI6WyJ1c2VyIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJjcmVhdGlvbl90aW1lIjoxNjI2OTYxOTQwOTI2LCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYWdlbmN5X25hbWUiOiJHbG9iYWwgVHJhdmVsIiwidm9lbiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiUGVydmluIFlhcXViemFkZSIsInByZWZlcnJlZF91c2VybmFtZSI6InBlcnZpbnVzZXIiLCJnaXZlbl9uYW1lIjoiUGVydmluIiwiZmFtaWx5X25hbWUiOiJZYXF1YnphZGUiLCJlbWFpbCI6InBhcnZpbnl5QGNvZGUuZWR1LmF6In0.";
-    public static final LocalDate DATE = LocalDate.now();
-    public static final LocalDateTime DATE_TIME = LocalDateTime.now();
+    public static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Autowired
     private MockMvc mockMvc;
@@ -168,6 +156,21 @@ class ProfileControllerTest {
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(getJson(dto)))
                 .andExpect(content().string("You can't have more than one offer."))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    @DisplayName("ProfileController - createOffer() - NOT ACCEPTABLE")
+    void createOffer_OutOfWorkingHours() throws Exception {
+        OfferDTO dto = new OfferDTO("test", "test", 1, "test");
+
+        when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new OutOfWorkingHours());
+        mockMvc
+                .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
+                        .header(AUTHORIZATION, TOKEN)
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(getJson(dto)))
+                .andExpect(content().string("You can't make an offer out of working hours."))
                 .andExpect(status().isNotAcceptable());
     }
 

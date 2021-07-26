@@ -2,6 +2,7 @@ package az.code.tourapi.services;
 
 import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.exceptions.MultipleOffers;
+import az.code.tourapi.exceptions.OutOfWorkingHours;
 import az.code.tourapi.exceptions.RequestExpired;
 import az.code.tourapi.exceptions.RequestNotFound;
 import az.code.tourapi.models.dtos.OfferDTO;
@@ -13,7 +14,9 @@ import az.code.tourapi.repositories.OfferRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import az.code.tourapi.utils.Mappers;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Clock;
+import java.time.LocalTime;
 import java.util.List;
 
 import static az.code.tourapi.configurations.RabbitConfig.REQUEST_EXCHANGE;
@@ -29,6 +34,7 @@ import static az.code.tourapi.utils.Specifications.sameValue;
 import static az.code.tourapi.utils.Specifications.sameValueWithId;
 import static az.code.tourapi.utils.Util.*;
 
+@Setter
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
@@ -37,6 +43,12 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRequestRepository userRepo;
     private final OfferRepository offerRepo;
     private final Mappers mappers;
+    private final Clock clock;
+
+    @Value("${app.start-time}")
+    private String startTimeString;
+    @Value("${app.end-time}")
+    private String endTimeString;
 
     @Override
     public List<UserRequest> getRequests(String agencyName, Boolean isArchived, UserRequestStatus status,
@@ -65,6 +77,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public UserRequest makeOffer(String agencyName, String uuid, OfferDTO dto) throws IOException {
+        if (checkTime(startTimeString, endTimeString, LocalTime.now(clock)))
+            throw new OutOfWorkingHours();
         RequestId id = new RequestId(agencyName, uuid);
         UserRequest userRequest = userRepo.findById(id)
                 .orElseThrow(RequestNotFound::new);

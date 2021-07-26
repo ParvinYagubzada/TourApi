@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static az.code.tourapi.models.dtos.OfferDTO.*;
+import static az.code.tourapi.utils.Mappers.timeFormatter;
 
 public class Util {
 
@@ -41,6 +43,12 @@ public class Util {
         } else {
             return new LinkedList<>();
         }
+    }
+
+    public static boolean checkTime(String startTimeString, String endTimeString, LocalTime now) {
+        LocalTime start = LocalTime.parse(startTimeString, timeFormatter);
+        LocalTime end = LocalTime.parse(endTimeString, timeFormatter);
+        return now.isAfter(end) || now.isBefore(start);
     }
 
     @SneakyThrows

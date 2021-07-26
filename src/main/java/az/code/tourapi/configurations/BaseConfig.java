@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.Clock;
+
 @Configuration
 @EnableScheduling
 @EnableTransactionManagement
@@ -18,6 +20,11 @@ public class BaseConfig implements WebMvcConfigurer {
 
     public BaseConfig(TokenInterceptor productServiceInterceptor) {
         this.productServiceInterceptor = productServiceInterceptor;
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 
     @Bean

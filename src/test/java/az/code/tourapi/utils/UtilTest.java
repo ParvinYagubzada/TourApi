@@ -11,14 +11,27 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 
+import static az.code.tourapi.utils.Mappers.timeFormatter;
 import static az.code.tourapi.utils.Util.convertToken;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("SpellCheckingInspection")
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 class UtilTest {
+
+    @Test
+    @DisplayName("Util - checkTime - Valid")
+    void checkTime() {
+        LocalTime now = LocalTime.parse("01:00:00", timeFormatter);
+        String start = "08:00:00";
+        String end = "19:00:00";
+        assertTrue(Util.checkTime(start, end, now));
+        now = LocalTime.parse("09:00:00", timeFormatter);
+        assertFalse(Util.checkTime(start, end, now));
+    }
 
     @Test
     @DisplayName("Util - createImage - Valid")

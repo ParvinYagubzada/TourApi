@@ -15,6 +15,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
@@ -22,13 +23,16 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Clock;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static az.code.tourapi.TourApiApplicationTests.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @TestInstance(PER_CLASS)
@@ -36,7 +40,6 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @SuppressWarnings("SpellCheckingInspection")
 class ProfileServiceImplIntegrationTest {
 
-    public static final String AGENCY_NAME = "DataFlex";
     public static final String SORT_BY = "status";
 
     @Autowired
@@ -53,6 +56,24 @@ class ProfileServiceImplIntegrationTest {
     private OfferRepository offerRepo;
     @Autowired
     private QueueListenerService listenerService;
+    @MockBean
+    private Clock clock;
+
+    private static OfferDTO createOffer() {
+        return OfferDTO.builder()
+                .description("salary").travelDates("time")
+                .price(386).notes("sock")
+                .build();
+    }
+
+    private static AcceptedOffer createAccepted(String uuid) {
+        return AcceptedOffer.builder()
+                .agencyName(AGENCY_NAME).uuid(uuid)
+                .username("test").phoneNumber(null)
+                .firstName("test1").lastName("test2")
+                .userId("12345678")
+                .build();
+    }
 
     @Test
     @Order(1)
@@ -107,6 +128,9 @@ class ProfileServiceImplIntegrationTest {
         try (Connection conn = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(conn, new ClassPathResource("triggers.sql"));
         }
+        Clock fixedClock = Clock.fixed(DATE_TIME.atZone(SYSTEM_DEFAULT).toInstant(), SYSTEM_DEFAULT);
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
         userRepo.saveAndFlush(User.builder().username("shayne.pfannerstill").agencyName(AGENCY_NAME).voen("5344501174").email("serina.tremblay@yahoo.com").name("Cleveland Padberg").build());
         userRepo.saveAndFlush(User.builder().username("herb.mraz").agencyName("McDonald's").voen("5850888582").email("loris.cronin@hotmail.com").name("Nicolas Hammes").build());
         List<Request> requests = new ArrayList<>();
@@ -151,23 +175,6 @@ class ProfileServiceImplIntegrationTest {
         IntStream.range(10, 20).forEach(value -> listenerService.listenAcceptances(createAccepted(requests.get(value).getUuid())));
         IntStream.of(0, 1, 10, 11, 20, 21).forEach(value -> listenerService.listenDeactivations(requests.get(value).getUuid()));
     }
-
-    private static OfferDTO createOffer() {
-        return OfferDTO.builder()
-                .description("salary").travelDates("time")
-                .price(386).notes("sock")
-                .build();
-    }
-
-    private static AcceptedOffer createAccepted(String uuid) {
-        return AcceptedOffer.builder()
-                .agencyName(ProfileServiceImplIntegrationTest.AGENCY_NAME).uuid(uuid)
-                .username("test").phoneNumber(null)
-                .firstName("test1").lastName("test2")
-                .userId("12345678")
-                .build();
-    }
-
 
     @AfterAll
     public void clean() {

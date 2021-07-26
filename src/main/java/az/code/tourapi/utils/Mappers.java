@@ -27,7 +27,7 @@ public class Mappers {
     public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final ModelMapper mapper;
     @Value("${app.start-time}")
-    private String beginTimeString;
+    private String startTimeString;
     @Value("${app.end-time}")
     private String endTimeString;
     @Value("${app.deadline}")
@@ -62,7 +62,7 @@ public class Mappers {
         request.setIsActive(true);
         request.setTravelStartDate(LocalDate.parse(dto.getTravelStartDate(), formatter));
         request.setTravelEndDate(LocalDate.parse(dto.getTravelEndDate(), formatter));
-        LocalTime begin = LocalTime.parse(beginTimeString, timeFormatter);
+        LocalTime begin = LocalTime.parse(startTimeString, timeFormatter);
         LocalTime end = LocalTime.parse(endTimeString, timeFormatter);
         if (now.isAfter(begin) && now.isBefore(end)) {
             request.setExpirationTime(LocalDate.now().atTime(now).plusHours(deadlineHours));
