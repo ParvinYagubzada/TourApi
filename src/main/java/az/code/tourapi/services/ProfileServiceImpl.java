@@ -11,7 +11,6 @@ import az.code.tourapi.repositories.OfferRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import az.code.tourapi.utils.Mappers;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -27,12 +26,12 @@ import java.util.List;
 
 import static az.code.tourapi.configurations.RabbitConfig.REQUEST_EXCHANGE;
 import static az.code.tourapi.configurations.RabbitConfig.REQUEST_KEY;
-import static az.code.tourapi.enums.UserRequestStatus.*;
+import static az.code.tourapi.enums.UserRequestStatus.ACCEPTED;
+import static az.code.tourapi.enums.UserRequestStatus.EXPIRED;
 import static az.code.tourapi.utils.Specifications.sameValue;
 import static az.code.tourapi.utils.Specifications.sameValueWithId;
 import static az.code.tourapi.utils.Util.*;
 
-@Setter
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {

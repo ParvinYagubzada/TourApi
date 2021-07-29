@@ -42,6 +42,7 @@ class ProfileControllerTest {
 
     public static final String BASE_URL = "/api/v1/profile";
     public static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    public static final OfferDTO OFFER_DTO = new OfferDTO(LONG_STRING, TEST_TRAVEL_DATES, 1, LONG_STRING);
 
     @Autowired
     private MockMvc mockMvc;
@@ -144,15 +145,14 @@ class ProfileControllerTest {
         RequestId id = new RequestId(AGENCY_NAME, UUID);
         Request request = new Request(UUID, "RU", "relaxing", "tural_offer", "Bkk", DATE, DATE, "206", 457, true, DATE_TIME, DATE_TIME);
         Offer offer = new Offer(id, TEST_STRING, TEST_STRING, 1, TEST_STRING, true, DATE_TIME);
-        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
         UserRequest response = new UserRequest(id, OFFER_MADE, false, false, request, null, offer);
 
-        when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenReturn(response);
+        when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenReturn(response);
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
                         .header(AUTHORIZATION, TOKEN)
                         .contentType(APPLICATION_JSON_UTF8)
-                        .content(getJson(dto)))
+                        .content(getJson()))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
                 .andExpect(status().isCreated());
     }
@@ -160,14 +160,12 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - CONFLICT")
     void createOffer_RequestExpired() throws Exception {
-        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
-
-        when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new RequestExpired());
+        when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new RequestExpired());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
                         .header(AUTHORIZATION, TOKEN)
                         .contentType(APPLICATION_JSON_UTF8)
-                        .content(getJson(dto)))
+                        .content(getJson()))
                 .andExpect(content().string("This request is expired."))
                 .andExpect(status().isConflict());
     }
@@ -175,14 +173,12 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - NOT ACCEPTABLE")
     void createOffer_MultipleOffers() throws Exception {
-        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
-
-        when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new MultipleOffers());
+        when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new MultipleOffers());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
                         .header(AUTHORIZATION, TOKEN)
                         .contentType(APPLICATION_JSON_UTF8)
-                        .content(getJson(dto)))
+                        .content(getJson()))
                 .andExpect(content().string("You can't have more than one offer."))
                 .andExpect(status().isNotAcceptable());
     }
@@ -190,14 +186,12 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - NOT ACCEPTABLE")
     void createOffer_OutOfWorkingHours() throws Exception {
-        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
-
-        when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new OutOfWorkingHours());
+        when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new OutOfWorkingHours());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
                         .header(AUTHORIZATION, TOKEN)
                         .contentType(APPLICATION_JSON_UTF8)
-                        .content(getJson(dto)))
+                        .content(getJson()))
                 .andExpect(content().string("You can't make an offer out of working hours."))
                 .andExpect(status().isNotAcceptable());
     }
@@ -205,18 +199,16 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - INTERNAL SERVER ERROR")
     void createOffer_IOException() throws Exception {
-        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
-
-        when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new IOException());
+        when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new IOException());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
                         .header(AUTHORIZATION, TOKEN)
                         .contentType(APPLICATION_JSON_UTF8)
-                        .content(getJson(dto)))
+                        .content(getJson()))
                 .andExpect(status().isInternalServerError());
     }
 
-    private <T> String getJson(T dto) throws JsonProcessingException {
-        return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(dto);
+    private <T> String getJson() throws JsonProcessingException {
+        return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(ProfileControllerTest.OFFER_DTO);
     }
 }

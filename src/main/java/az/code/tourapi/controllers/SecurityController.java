@@ -44,7 +44,7 @@ public class SecurityController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO dto) {
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO dto) {
         securityService.resetPassword(dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -52,7 +52,7 @@ public class SecurityController {
     @PostMapping("/profile/changePassword")
     public ResponseEntity<HttpStatus> changePassword(
             @RequestAttribute("user") UserData user,
-            @RequestBody UpdatePasswordDTO dto
+            @Valid @RequestBody UpdatePasswordDTO dto
     ) {
         securityService.changePassword(user.getUsername(), dto);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
@@ -71,7 +72,7 @@ public class ProfileController {
     @PostMapping("/makeOffer/{uuid}")
     public ResponseEntity<UserRequest> createOffer(
             @PathVariable String uuid,
-            @RequestBody OfferDTO dto,
+            @Valid @RequestBody OfferDTO dto,
             @RequestAttribute("user") UserData user
     ) throws IOException {
         return new ResponseEntity<>(service.makeOffer(user.getAgencyName(), uuid, dto),

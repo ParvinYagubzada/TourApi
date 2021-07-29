@@ -17,7 +17,7 @@ import static az.code.tourapi.configurations.RabbitConfig.EXPIRATION_KEY;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {Config.class})
+@ContextConfiguration(classes = {ExpirationTimeChecker.class})
 class ExpirationTimeCheckerTest {
 
     @MockBean

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -55,8 +56,8 @@ class ProfileServiceImplTest {
     @BeforeEach
     public void init() {
         service = new ProfileServiceImpl(template, userRepo, offerRepo, mappers, clock);
-        service.setStartTimeString("09:00:00");
-        service.setEndTimeString("19:00:00");
+        ReflectionTestUtils.setField(service,"startTimeString", "09:00:00");
+        ReflectionTestUtils.setField(service,"endTimeString", "19:00:00");
     }
 
     @Test
