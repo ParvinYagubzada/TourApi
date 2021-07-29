@@ -106,27 +106,35 @@ class MappersTest {
     @Test
     @DisplayName("Mappers - RawRequest to Request - In working hours")
     void rawToRequestWorkingHours() {
-        LocalDate start = LocalDate.parse("12.12.1212", formatter);
-        LocalDate endDate = LocalDate.parse("12.12.1213", formatter);
         LocalTime now = LocalTime.parse("10:00:00", timeFormatter);
 
         RawRequest rawRequest = createRawRequest();
-        Request expected = createExpectedRequest(start, endDate)
+        Request expected = createExpectedRequest()
                 .expirationTime(LocalDate.now().atTime(now).plusHours(8))
                 .build();
         assertEquals(expected, mappers.rawToRequest(rawRequest, now));
     }
 
+//    @Test
+//    @DisplayName("Mappers - RawRequest to Request - In working hours long")
+//    void rawToRequestWorkingHoursLong() {
+//        LocalTime now = LocalTime.parse("18:00:00", timeFormatter);
+//
+//        RawRequest rawRequest = createRawRequest();
+//        Request expected = createExpectedRequest()
+//                .expirationTime(LocalDate.now().atTime(now).plusHours(8))
+//                .build();
+//        assertEquals(expected, mappers.rawToRequest(rawRequest, now));
+//    }
+
     @Test
     @DisplayName("Mappers - RawRequest to Request - Before working hours")
     void rawToRequestBeforeWorkingHours() {
-        LocalDate start = LocalDate.parse("12.12.1212", formatter);
-        LocalDate endDate = LocalDate.parse("12.12.1213", formatter);
         LocalTime now = LocalTime.parse("08:00:00", timeFormatter);
         LocalTime begin = LocalTime.parse("09:00:00", timeFormatter);
 
         RawRequest rawRequest = createRawRequest();
-        Request expected = createExpectedRequest(start, endDate)
+        Request expected = createExpectedRequest()
                 .expirationTime(LocalDate.now().atTime(begin).plusHours(8))
                 .build();
         assertEquals(expected, mappers.rawToRequest(rawRequest, now));
@@ -135,13 +143,11 @@ class MappersTest {
     @Test
     @DisplayName("Mappers - RawRequest to Request - After working hours")
     void rawToRequestAfterWorkingHours() {
-        LocalDate start = LocalDate.parse("12.12.1212", formatter);
-        LocalDate endDate = LocalDate.parse("12.12.1213", formatter);
         LocalTime now = LocalTime.parse("20:00:00", timeFormatter);
         LocalTime begin = LocalTime.parse("09:00:00", timeFormatter);
 
         RawRequest rawRequest = createRawRequest();
-        Request expected = createExpectedRequest(start, endDate)
+        Request expected = createExpectedRequest()
                 .expirationTime(LocalDate.now().plusDays(1).atTime(begin).plusHours(8))
                 .build();
         assertEquals(expected, mappers.rawToRequest(rawRequest, now));
@@ -156,11 +162,12 @@ class MappersTest {
                 .build();
     }
 
-    private Request.RequestBuilder createExpectedRequest(LocalDate start, LocalDate endDate) {
+    private Request.RequestBuilder createExpectedRequest() {
         return Request.builder()
                 .uuid(UUID).language(TEST_STRING).tourType(TEST_STRING)
                 .addressTo(TEST_STRING).addressFrom(TEST_STRING)
-                .travelStartDate(start).travelEndDate(endDate)
+                .travelStartDate(LocalDate.parse("12.12.1212", formatter))
+                .travelEndDate(LocalDate.parse("12.12.1213", formatter))
                 .travellerCount("1 man 2 men").budget(123)
                 .active(true);
     }

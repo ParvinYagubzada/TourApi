@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Builder
@@ -39,5 +40,11 @@ public class Request {
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     private LocalDateTime creationTime;
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
+    @ToString.Exclude
     private LocalDateTime expirationTime;
+
+    @ToString.Include(name = "expirationTime")
+    private String formatScheduledStartDate() {
+        return expirationTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss"));
+    }
 }
