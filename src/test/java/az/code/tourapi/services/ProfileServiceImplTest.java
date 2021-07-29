@@ -7,6 +7,7 @@ import az.code.tourapi.exceptions.RequestExpired;
 import az.code.tourapi.exceptions.RequestNotFound;
 import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.entities.Offer;
+import az.code.tourapi.models.entities.Request;
 import az.code.tourapi.models.entities.RequestId;
 import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.repositories.OfferRepository;
@@ -110,8 +111,10 @@ class ProfileServiceImplTest {
                 .description("salary").travelDates("time")
                 .price(386).notes("sock").isActive(true)
                 .build();
-        UserRequest expected = UserRequest.builder().offer(offer).status(UserRequestStatus.OFFER_MADE).build();
-        UserRequest param = UserRequest.builder().status(UserRequestStatus.NEW_REQUEST).build();
+        UserRequest expected = UserRequest.builder()
+                .request(Request.builder().active(true).build())
+                .offer(offer).status(UserRequestStatus.OFFER_MADE).build();
+        UserRequest param = UserRequest.builder().request(Request.builder().active(true).build()).build();
         Mockito.when(userRepo.findById(ID))
                 .thenReturn(Optional.of(param));
         Mockito.when(offerRepo.existsById(ID))
@@ -144,7 +147,7 @@ class ProfileServiceImplTest {
     void makeOffer_RequestExpired() {
         mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
         Mockito.when(userRepo.findById(ID))
-                .thenReturn(Optional.of(UserRequest.builder().status(UserRequestStatus.EXPIRED).build()));
+                .thenReturn(Optional.of(UserRequest.builder().request(Request.builder().active(false).build()).build()));
         assertThrows(RequestExpired.class, () -> service.makeOffer(AGENCY_NAME, UUID, null));
     }
 
@@ -153,7 +156,7 @@ class ProfileServiceImplTest {
     void makeOffer_MultipleOffers() {
         mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
         Mockito.when(userRepo.findById(ID))
-                .thenReturn(Optional.of(UserRequest.builder().status(UserRequestStatus.NEW_REQUEST).build()));
+                .thenReturn(Optional.of(UserRequest.builder().request(Request.builder().active(true).build()).build()));
         Mockito.when(offerRepo.existsById(ID))
                 .thenReturn(true);
         assertThrows(MultipleOffers.class, () -> service.makeOffer(AGENCY_NAME, UUID, null));

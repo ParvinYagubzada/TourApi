@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import static az.code.tourapi.TourApiApplicationTests.TEST_STRING;
+import static az.code.tourapi.TourApiApplicationTests.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -46,8 +48,8 @@ class QueueListenerServiceImplTest {
     @DisplayName("QueueListenerService - listenRequests")
     void listenRequests() {
         RawRequest request = RawRequest.builder()
-                .uuid("87b2a6b9-e9d2-4008-be87-ee3a4df2bd72").language("AZ").tourType("test")
-                .addressTo("test").addressFrom("test")
+                .uuid(UUID).language("AZ").tourType(TEST_STRING)
+                .addressTo(TEST_STRING).addressFrom(TEST_STRING)
                 .travelStartDate("12.12.1212").travelEndDate("12.12.1213")
                 .travellerCount("1 man 2 men").budget("123")
                 .build();
@@ -58,29 +60,27 @@ class QueueListenerServiceImplTest {
     @Test
     @DisplayName("QueueListenerService - listenDeactivations")
     void listenDeactivations() {
-        String uuid = "29353340-3152-4631-bd6a-b2b903428d7d";
-        requestRepo.saveAndFlush(mappers.rawToRequest(new RawRequest(uuid, "RU", "Dark Land", "Taur-im-Duinath", "Tol Brandir", "23.01.2002", "14.06.1962", "025", "907"), LocalTime.parse("06:22:51.241456399")));
-        service.listenDeactivations(uuid);
-        Optional<Request> request = requestRepo.findById(uuid);
+        requestRepo.saveAndFlush(mappers.rawToRequest(new RawRequest(UUID, "RU", "Dark Land", "Taur-im-Duinath", "Tol Brandir", "23.01.2002", "14.06.1962", "025", "907"), LocalTime.parse("06:22:51.241456399")));
+        service.listenDeactivations(UUID);
+        Optional<Request> request = requestRepo.findById(UUID);
         assertTrue(request.isPresent());
-        assertFalse(request.get().getIsActive());
+        assertFalse(request.get().isActive());
     }
 
     @Test
     @DisplayName("QueueListenerService - listenAcceptances")
     void listenAcceptances() {
         String agencyName = "DataFlex";
-        String uuid = "29353340-3152-4631-bd6a-b2b903428d7d";
         userRepo.saveAndFlush(User.builder().username("shayne.pfannerstill").agencyName(agencyName).voen("5344501174").email("serina.tremblay@yahoo.com").name("Cleveland Padberg").build());
-        requestRepo.saveAndFlush(mappers.rawToRequest(new RawRequest(uuid, "RU", "Dark Land", "Taur-im-Duinath", "Tol Brandir", "23.01.2002", "14.06.1962", "025", "907"), LocalTime.parse("06:22:51.241456399")));
+        requestRepo.saveAndFlush(mappers.rawToRequest(new RawRequest(UUID, "RU", "Dark Land", "Taur-im-Duinath", "Tol Brandir", "23.01.2002", "14.06.1962", "025", "907"), LocalTime.parse("06:22:51.241456399")));
         AcceptedOffer offer = AcceptedOffer.builder()
-                .uuid(uuid).agencyName(agencyName)
-                .username("test").phoneNumber(null)
+                .uuid(UUID).agencyName(agencyName)
+                .username(TEST_STRING).phoneNumber(null)
                 .firstName("test1").lastName("test2")
                 .userId("12345678")
                 .build();
         service.listenAcceptances(offer);
-        Optional<UserRequest> request = userRequestRepo.findById(new RequestId(agencyName, uuid));
+        Optional<UserRequest> request = userRequestRepo.findById(new RequestId(agencyName, UUID));
         assertTrue(request.isPresent());
         assertEquals(mappers.acceptedToCustomer(offer), request.get().getCustomer());
     }

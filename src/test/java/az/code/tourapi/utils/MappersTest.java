@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
 
+import static az.code.tourapi.TourApiApplicationTests.TEST_STRING;
+import static az.code.tourapi.TourApiApplicationTests.UUID;
 import static az.code.tourapi.utils.Mappers.timeFormatter;
 import static az.code.tourapi.utils.Util.formatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,13 +40,13 @@ class MappersTest {
     @DisplayName("Mappers - AcceptedOffer to CustomerInfo")
     void acceptedToCustomer() {
         AcceptedOffer offer = AcceptedOffer.builder()
-                .uuid("1234").agencyName("test")
-                .username("test").phoneNumber(null)
+                .uuid("1234").agencyName(TEST_STRING)
+                .username(TEST_STRING).phoneNumber(null)
                 .firstName("test1").lastName("test2")
                 .userId("12345678")
                 .build();
         CustomerInfo expected = CustomerInfo.builder()
-                .username("test").phoneNumber(null)
+                .username(TEST_STRING).phoneNumber(null)
                 .firstName("test1").lastName("test2")
                 .userId("12345678")
                 .build();
@@ -55,12 +57,12 @@ class MappersTest {
     @DisplayName("Mappers - RegisterDTO to User")
     void registerToUser() {
         RegisterDTO dto = RegisterDTO.builder()
-                .agencyName("test").voen("1234567890")
+                .agencyName(TEST_STRING).voen("1234567890")
                 .username("test1234").email("test@test.com")
-                .name("test").surname("i_am_a_tester")
+                .name(TEST_STRING).surname("i_am_a_tester")
                 .password("test123456").build();
         User expected = User.builder()
-                .agencyName("test").voen("1234567890")
+                .agencyName(TEST_STRING).voen("1234567890")
                 .username("test1234").email("test@test.com")
                 .name("test i_am_a_tester").build();
         assertEquals(expected, mappers.registerToUser(dto));
@@ -69,18 +71,17 @@ class MappersTest {
     @Test
     @DisplayName("Mappers - OfferDTO to Offer")
     void dtoToOffer() {
-        String agencyName = "test";
-        String uuid = "a6056cf2-0be5-4742-b247-565a06a0a0d6";
+        String agencyName = TEST_STRING;
         OfferDTO dto = OfferDTO.builder()
                 .description("salary").travelDates("time")
                 .price(386).notes("sock")
                 .build();
         Offer expected = Offer.builder()
-                .id(new RequestId(agencyName, uuid))
+                .id(new RequestId(agencyName, UUID))
                 .description("salary").travelDates("time")
                 .price(386).notes("sock").isActive(true)
                 .build();
-        assertEquals(expected, mappers.dtoToOffer(dto, agencyName, uuid));
+        assertEquals(expected, mappers.dtoToOffer(dto, agencyName, UUID));
     }
 
     @Test
@@ -148,8 +149,8 @@ class MappersTest {
 
     private RawRequest createRawRequest() {
         return RawRequest.builder()
-                .uuid("test").language("test").tourType("test")
-                .addressTo("test").addressFrom("test")
+                .uuid(UUID).language(TEST_STRING).tourType(TEST_STRING)
+                .addressTo(TEST_STRING).addressFrom(TEST_STRING)
                 .travelStartDate("12.12.1212").travelEndDate("12.12.1213")
                 .travellerCount("1 man 2 men").budget("123")
                 .build();
@@ -157,10 +158,10 @@ class MappersTest {
 
     private Request.RequestBuilder createExpectedRequest(LocalDate start, LocalDate endDate) {
         return Request.builder()
-                .uuid("test").language("test").tourType("test")
-                .addressTo("test").addressFrom("test")
+                .uuid(UUID).language(TEST_STRING).tourType(TEST_STRING)
+                .addressTo(TEST_STRING).addressFrom(TEST_STRING)
                 .travelStartDate(start).travelEndDate(endDate)
                 .travellerCount("1 man 2 men").budget(123)
-                .isActive(true);
+                .active(true);
     }
 }

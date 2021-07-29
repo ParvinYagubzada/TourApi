@@ -80,9 +80,9 @@ class SecurityControllerTest {
     @DisplayName("SecurityController - register() - Valid")
     void register() throws Exception {
         RegisterDTO dto = RegisterDTO.builder()
-                .agencyName("test").voen("1234567890")
+                .agencyName(TEST_STRING).voen("1234567890")
                 .username("test1234").email("test@test.com")
-                .name("test").surname("i_am_a_tester")
+                .name(TEST_STRING).surname("i_am_a_tester")
                 .password("test123456").build();
         RegisterResponseDTO response = new RegisterResponseDTO("Created");
         String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(dto);
@@ -99,7 +99,7 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - verify() - Valid")
     void verify() throws Exception {
-        String token = "test", username = "test", response = "User verified.";
+        String token = TEST_STRING, username = TEST_STRING, response = "User verified.";
         when(securityService.verify(token, username)).thenReturn(response);
         mockMvc
                 .perform(get(BASE_URL + "/verify")
@@ -112,7 +112,7 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - verify() - NOT FOUND")
     void verify_UserNotFount() throws Exception {
-        String token = "test", username = "test";
+        String token = TEST_STRING, username = TEST_STRING;
         when(securityService.verify(token, username)).thenThrow(new UserNotFound());
         mockMvc
                 .perform(get(BASE_URL + "/verify")
@@ -124,7 +124,7 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - verify() - NOT ACCEPTABLE")
     void verify_InvalidVerificationToken() throws Exception {
-        String token = "test", username = "test";
+        String token = TEST_STRING, username = TEST_STRING;
         when(securityService.verify(token, username)).thenThrow(new InvalidVerificationToken());
         mockMvc
                 .perform(get(BASE_URL + "/verify")
@@ -136,7 +136,7 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - sendResetPasswordUrl() - Valid")
     void sendResetPasswordUrl() throws Exception {
-        String email = "test";
+        String email = TEST_STRING;
         doNothing().when(securityService).sendResetPasswordUrl(email);
         mockMvc
                 .perform(post(BASE_URL + "/sendResetPasswordUrl")

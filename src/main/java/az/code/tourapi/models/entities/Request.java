@@ -34,7 +34,7 @@ public class Request {
     private Integer budget;
 
     @Column(name = "status")
-    private Boolean isActive;
+    private boolean active;
     @CreationTimestamp
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     private LocalDateTime creationTime;

@@ -82,7 +82,7 @@ public class ProfileServiceImpl implements ProfileService {
         RequestId id = new RequestId(agencyName, uuid);
         UserRequest userRequest = userRepo.findById(id)
                 .orElseThrow(RequestNotFound::new);
-        if (userRequest.getStatus() == UserRequestStatus.EXPIRED)
+        if (!userRequest.getRequest().isActive())
             throw new RequestExpired();
         if (offerRepo.existsById(id))
             throw new MultipleOffers();

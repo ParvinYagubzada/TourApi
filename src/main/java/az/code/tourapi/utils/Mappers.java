@@ -59,7 +59,7 @@ public class Mappers {
 
     public Request rawToRequest(RawRequest dto, LocalTime now) {
         Request request = mapper.map(dto, Request.class);
-        request.setIsActive(true);
+        request.setActive(true);
         request.setTravelStartDate(LocalDate.parse(dto.getTravelStartDate(), formatter));
         request.setTravelEndDate(LocalDate.parse(dto.getTravelEndDate(), formatter));
         LocalTime begin = LocalTime.parse(startTimeString, timeFormatter);

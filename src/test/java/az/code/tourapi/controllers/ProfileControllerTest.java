@@ -115,8 +115,8 @@ class ProfileControllerTest {
     void createOffer() throws Exception {
         RequestId id = new RequestId(AGENCY_NAME, UUID);
         Request request = new Request(UUID, "RU", "relaxing", "tural_offer", "Bkk", DATE, DATE, "206", 457, true, DATE_TIME, DATE_TIME);
-        Offer offer = new Offer(id, "test", "test", 1, "test", true, DATE_TIME);
-        OfferDTO dto = new OfferDTO("test", "test", 1, "test");
+        Offer offer = new Offer(id, TEST_STRING, TEST_STRING, 1, TEST_STRING, true, DATE_TIME);
+        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
         UserRequest response = new UserRequest(id, OFFER_MADE, false, request, null, offer);
 
         when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenReturn(response);
@@ -132,7 +132,7 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - CONFLICT")
     void createOffer_RequestExpired() throws Exception {
-        OfferDTO dto = new OfferDTO("test", "test", 1, "test");
+        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
 
         when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new RequestExpired());
         mockMvc
@@ -147,7 +147,7 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - NOT ACCEPTABLE")
     void createOffer_MultipleOffers() throws Exception {
-        OfferDTO dto = new OfferDTO("test", "test", 1, "test");
+        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
 
         when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new MultipleOffers());
         mockMvc
@@ -162,7 +162,7 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - NOT ACCEPTABLE")
     void createOffer_OutOfWorkingHours() throws Exception {
-        OfferDTO dto = new OfferDTO("test", "test", 1, "test");
+        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
 
         when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new OutOfWorkingHours());
         mockMvc
@@ -177,7 +177,7 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - createOffer() - INTERNAL SERVER ERROR")
     void createOffer_IOException() throws Exception {
-        OfferDTO dto = new OfferDTO("test", "test", 1, "test");
+        OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
 
         when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenThrow(new IOException());
         mockMvc

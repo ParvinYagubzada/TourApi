@@ -33,7 +33,7 @@ public class QueueListenerServiceImpl implements QueueListenerService {
     public void listenDeactivations(String uuid) {
         requestRepo.findById(uuid)
                 .ifPresent(request -> requestRepo
-                        .save(request.setIsActive(false)));
+                        .save(request.setActive(false)));
     }
 
     @RabbitListener(queues = ACCEPTED_QUEUE)

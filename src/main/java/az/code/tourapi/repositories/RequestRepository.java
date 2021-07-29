@@ -6,11 +6,20 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface RequestRepository extends JpaRepository<Request, String> {
+
+    @Query("SELECT request.uuid FROM Request request " +
+           "WHERE request.active = true " +
+           "AND current_timestamp >= request.expirationTime ")
+    List<String> getExpiredRequests();
+
     @Modifying
     @Transactional
     @Query(nativeQuery = true, value =
             "UPDATE requests SET status = false " +
-            "WHERE now() > expiration_time")
+            "WHERE status != false " +
+            "AND now() > expiration_time")
     void changeStatusOfExpired();
 }
