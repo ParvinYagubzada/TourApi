@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
+import org.springframework.test.context.jdbc.Sql;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -27,10 +28,12 @@ import static az.code.tourapi.TourApiApplicationTests.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @SuppressWarnings("SpellCheckingInspection")
+@Sql(scripts = "classpath:truncate-data.sql", executionPhase = AFTER_TEST_METHOD)
 class QueueListenerServiceImplTest {
 
     @Autowired
@@ -45,7 +48,7 @@ class QueueListenerServiceImplTest {
     private UserRequestRepository userRequestRepo;
 
     @Test
-    @DisplayName("QueueListenerService - listenRequests")
+    @DisplayName("QueueListenerService - listenRequests()")
     void listenRequests() {
         RawRequest request = RawRequest.builder()
                 .uuid(UUID).language("AZ").tourType(TEST_STRING)
@@ -58,7 +61,7 @@ class QueueListenerServiceImplTest {
     }
 
     @Test
-    @DisplayName("QueueListenerService - listenDeactivations")
+    @DisplayName("QueueListenerService - listenDeactivations()")
     void listenDeactivations() {
         requestRepo.saveAndFlush(mappers.rawToRequest(new RawRequest(UUID, "RU", "Dark Land", "Taur-im-Duinath", "Tol Brandir", "23.01.2002", "14.06.1962", "025", "907"), LocalTime.parse("06:22:51.241456399")));
         service.listenDeactivations(UUID);
@@ -68,7 +71,7 @@ class QueueListenerServiceImplTest {
     }
 
     @Test
-    @DisplayName("QueueListenerService - listenAcceptances")
+    @DisplayName("QueueListenerService - listenAcceptances()")
     void listenAcceptances() {
         String agencyName = "DataFlex";
         userRepo.saveAndFlush(User.builder().username("shayne.pfannerstill").agencyName(agencyName).voen("5344501174").email("serina.tremblay@yahoo.com").name("Cleveland Padberg").build());
@@ -85,17 +88,20 @@ class QueueListenerServiceImplTest {
         assertEquals(mappers.acceptedToCustomer(offer), request.get().getCustomer());
     }
 
+    @Autowired
+    DataSource dataSource;
+
     @BeforeAll
-    public void init(@Autowired DataSource dataSource) throws SQLException {
+    public void init() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(conn, new ClassPathResource("triggers.sql"));
         }
     }
 
-    @AfterEach
-    public void clean() {
-        userRequestRepo.deleteAll();
-        userRepo.deleteAll();
-        requestRepo.deleteAll();
+    @AfterAll
+    public void cleanTriggers() throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("drop-triggers.sql"));
+        }
     }
 }

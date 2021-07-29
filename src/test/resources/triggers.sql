@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION populate_user_requests_function()
+CREATE OR REPLACE FUNCTION populate_user_requests()
     RETURNS trigger
     LANGUAGE plpgsql
 AS
@@ -9,21 +9,19 @@ BEGIN
     IF (TG_OP = ''INSERT'') THEN
         FOR row IN SELECT username, agency_name FROM users
             LOOP
-                INSERT INTO user_requests
-                VALUES (row.agency_name, new.uuid, FALSE, 0, NULL);
+                INSERT INTO user_requests(agency_name, uuid, archived, deleted, status, customer_id)
+                VALUES (row.agency_name, new.uuid, FALSE, FALSE, 0, NULL);
             END LOOP;
     END IF;
     RETURN new;
 END;
 ';
 
-DROP TRIGGER IF EXISTS populate_user_requests_trigger ON requests;
-
-CREATE TRIGGER populate_user_requests_trigger
+CREATE TRIGGER populate_user_requests
     AFTER INSERT
     ON requests
     FOR EACH ROW
-EXECUTE PROCEDURE populate_user_requests_function();
+EXECUTE PROCEDURE populate_user_requests();
 
 CREATE OR REPLACE FUNCTION update_all_user_requests()
     RETURNS trigger
@@ -38,7 +36,7 @@ BEGIN
             FOR row IN SELECT username, agency_name FROM users
                 LOOP
                     UPDATE user_requests
-                    SET status = 3, is_archived = true
+                    SET status = 3, archived = true
                     WHERE uuid = old.uuid AND status = 0;
                 END LOOP;
         END IF;
@@ -46,9 +44,7 @@ BEGIN
     RETURN new;
 END';
 
-DROP TRIGGER IF EXISTS update_all_user_trigger ON requests;
-
-CREATE TRIGGER update_all_user_trigger
+CREATE TRIGGER update_all_user_requests
     AFTER UPDATE
     ON requests
     FOR EACH ROW

@@ -1,9 +1,6 @@
 package az.code.tourapi.controllers;
 
-import az.code.tourapi.exceptions.MultipleOffers;
-import az.code.tourapi.exceptions.OutOfWorkingHours;
-import az.code.tourapi.exceptions.RequestExpired;
-import az.code.tourapi.exceptions.RequestNotFound;
+import az.code.tourapi.exceptions.*;
 import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.entities.Offer;
 import az.code.tourapi.models.entities.Request;
@@ -74,7 +71,7 @@ class ProfileControllerTest {
     @DisplayName("ProfileController - getRequest() - Valid")
     void getRequest() throws Exception {
         Request request = new Request(UUID, "RU", "relaxing", "tural_offer", "Bkk", DATE, DATE, "206", 457, true, DATE_TIME, DATE_TIME);
-        UserRequest response = UserRequest.builder().id(new RequestId(AGENCY_NAME, UUID)).request(request).status(NEW_REQUEST).isArchived(false).build();
+        UserRequest response = UserRequest.builder().id(new RequestId(AGENCY_NAME, UUID)).request(request).status(NEW_REQUEST).archived(false).build();
         when(profileService.getRequest(AGENCY_NAME, UUID)).thenReturn(response);
         mockMvc
                 .perform(get(BASE_URL + "/requests/{uuid}", UUID)
@@ -86,7 +83,7 @@ class ProfileControllerTest {
     @Test
     @DisplayName("ProfileController - archiveRequest() - Valid")
     void archiveRequest() throws Exception {
-        UserRequest response = UserRequest.builder().isArchived(true).build();
+        UserRequest response = UserRequest.builder().archived(true).build();
         when(profileService.archiveRequest(AGENCY_NAME, UUID)).thenReturn(response);
         mockMvc
                 .perform(post(BASE_URL + "/archive/{uuid}", UUID)
@@ -107,13 +104,48 @@ class ProfileControllerTest {
     }
 
     @Test
+    @DisplayName("ProfileController - unarchiveRequest() - Valid")
+    void unarchiveRequest() throws Exception {
+        UserRequest response = UserRequest.builder().archived(false).build();
+        when(profileService.unarchiveRequest(AGENCY_NAME, UUID)).thenReturn(response);
+        mockMvc
+                .perform(post(BASE_URL + "/unarchive/{uuid}", UUID)
+                        .header(AUTHORIZATION, TOKEN))
+                .andExpect(content().string(mapper.writeValueAsString(response)))
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
+    @DisplayName("ProfileController - unarchiveRequest() - NOT ACCEPTABLE")
+    void unarchiveRequest_InvalidUnarchive() throws Exception {
+        when(profileService.unarchiveRequest(AGENCY_NAME, UUID)).thenThrow(new InvalidUnarchive());
+        mockMvc
+                .perform(post(BASE_URL + "/unarchive/{uuid}", UUID)
+                        .header(AUTHORIZATION, TOKEN))
+                .andExpect(content().string("You can't unarchive EXPIRED or ACCEPTED requests."))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    @DisplayName("ProfileController - deleteRequest() - Valid")
+    void deleteRequest() throws Exception {
+        UserRequest response = UserRequest.builder().deleted(true).build();
+        when(profileService.deleteRequest(AGENCY_NAME, UUID)).thenReturn(response);
+        mockMvc
+                .perform(post(BASE_URL + "/delete/{uuid}", UUID)
+                        .header(AUTHORIZATION, TOKEN))
+                .andExpect(content().string(mapper.writeValueAsString(response)))
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
     @DisplayName("ProfileController - createOffer() - Valid")
     void createOffer() throws Exception {
         RequestId id = new RequestId(AGENCY_NAME, UUID);
         Request request = new Request(UUID, "RU", "relaxing", "tural_offer", "Bkk", DATE, DATE, "206", 457, true, DATE_TIME, DATE_TIME);
         Offer offer = new Offer(id, TEST_STRING, TEST_STRING, 1, TEST_STRING, true, DATE_TIME);
         OfferDTO dto = new OfferDTO(TEST_STRING, TEST_STRING, 1, TEST_STRING);
-        UserRequest response = new UserRequest(id, OFFER_MADE, false, request, null, offer);
+        UserRequest response = new UserRequest(id, OFFER_MADE, false, false, request, null, offer);
 
         when(profileService.makeOffer(AGENCY_NAME, UUID, dto)).thenReturn(response);
         mockMvc

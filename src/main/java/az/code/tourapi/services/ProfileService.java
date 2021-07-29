@@ -16,5 +16,9 @@ public interface ProfileService {
 
     UserRequest archiveRequest(String agencyName, String uuid);
 
+    UserRequest unarchiveRequest(String agencyName, String uuid);
+
+    UserRequest deleteRequest(String agencyName, String uuid);
+
     UserRequest makeOffer(String agencyName, String uuid, OfferDTO dto) throws IOException;
 }

@@ -61,6 +61,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @ExceptionHandler(InvalidUnarchive.class)
+    public ResponseEntity<String> exceptionHandler(InvalidUnarchive e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+    }
+
     @ExceptionHandler(RequestExpired.class)
     public ResponseEntity<String> exceptionHandler(RequestExpired e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);

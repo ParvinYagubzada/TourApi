@@ -1,6 +1,7 @@
 package az.code.tourapi.services;
 
 import az.code.tourapi.repositories.RequestRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -28,6 +29,7 @@ class ExpirationTimeCheckerTest {
     ExpirationTimeChecker checker;
 
     @Test
+    @DisplayName("ExpirationTimeChecker - check()")
     void check() {
         List<String> expiredRequests = List.of(
                 "f7d012b9-d2cd-4410-a869-d1bf52969c05",

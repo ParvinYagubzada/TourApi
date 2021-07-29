@@ -13,7 +13,7 @@ class MailUtilTest {
     private final JavaMailSender mailSender = mock(JavaMailSender.class);
 
     @Test
-    @DisplayName("MailUtil - sendNotificationEmail")
+    @DisplayName("MailUtil - sendNotificationEmail()")
     void sendNotificationEmail() {
         MailUtil util = new MailUtil(mailSender);
         SimpleMailMessage mail = new SimpleMailMessage();

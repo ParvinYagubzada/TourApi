@@ -26,7 +26,8 @@ public class UserRequest {
     @Enumerated(EnumType.ORDINAL)
     private UserRequestStatus status;
 
-    private boolean isArchived;
+    private boolean archived;
+    private boolean deleted;
 
     @OneToOne
     @JoinColumn(name = "uuid", referencedColumnName = "uuid", insertable = false, updatable = false, nullable = false)

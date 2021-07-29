@@ -1,10 +1,7 @@
 package az.code.tourapi.services;
 
 import az.code.tourapi.enums.UserRequestStatus;
-import az.code.tourapi.exceptions.MultipleOffers;
-import az.code.tourapi.exceptions.OutOfWorkingHours;
-import az.code.tourapi.exceptions.RequestExpired;
-import az.code.tourapi.exceptions.RequestNotFound;
+import az.code.tourapi.exceptions.*;
 import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.entities.RequestId;
 import az.code.tourapi.models.entities.UserRequest;
@@ -30,6 +27,7 @@ import java.util.List;
 
 import static az.code.tourapi.configurations.RabbitConfig.REQUEST_EXCHANGE;
 import static az.code.tourapi.configurations.RabbitConfig.REQUEST_KEY;
+import static az.code.tourapi.enums.UserRequestStatus.*;
 import static az.code.tourapi.utils.Specifications.sameValue;
 import static az.code.tourapi.utils.Specifications.sameValueWithId;
 import static az.code.tourapi.utils.Util.*;
@@ -55,7 +53,8 @@ public class ProfileServiceImpl implements ProfileService {
                                          Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = preparePage(pageNo, pageSize, sortBy);
         Page<UserRequest> pageResult = userRepo.findAll(sameValue(Fields.status, status)
-                .and(sameValue(Fields.isArchived, isArchived))
+                .and(sameValue(Fields.archived, isArchived))
+                .and(sameValue(Fields.deleted, false))
                 .and(sameValueWithId(RequestId.Fields.agencyName, agencyName)), paging);
         return getResult(pageResult);
     }
@@ -72,6 +71,24 @@ public class ProfileServiceImpl implements ProfileService {
         UserRequest userRequest = userRepo.findById(id)
                 .orElseThrow(RequestNotFound::new);
         return userRepo.save(userRequest.setArchived(true));
+    }
+
+    @Override
+    public UserRequest unarchiveRequest(String agencyName, String uuid) {
+        RequestId id = new RequestId(agencyName, uuid);
+        UserRequest userRequest = userRepo.findById(id)
+                .orElseThrow(RequestNotFound::new);
+        if (userRequest.getStatus() == EXPIRED || userRequest.getStatus() == ACCEPTED )
+            throw new InvalidUnarchive();
+        return userRepo.save(userRequest.setArchived(false));
+    }
+
+    @Override
+    public UserRequest deleteRequest(String agencyName, String uuid) {
+        RequestId id = new RequestId(agencyName, uuid);
+        UserRequest userRequest = userRepo.findById(id)
+                .orElseThrow(RequestNotFound::new);
+        return userRepo.save(userRequest.setDeleted(true));
     }
 
     @Override

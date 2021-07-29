@@ -50,6 +50,24 @@ public class ProfileController {
                 HttpStatus.ACCEPTED);
     }
 
+    @PostMapping("/unarchive/{uuid}")
+    public ResponseEntity<UserRequest> unarchiveRequest(
+            @PathVariable String uuid,
+            @RequestAttribute("user") UserData user
+    ) {
+        return new ResponseEntity<>(service.unarchiveRequest(user.getAgencyName(), uuid),
+                HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/delete/{uuid}")
+    public ResponseEntity<UserRequest> deleteRequest(
+            @PathVariable String uuid,
+            @RequestAttribute("user") UserData user
+    ) {
+        return new ResponseEntity<>(service.deleteRequest(user.getAgencyName(), uuid),
+                HttpStatus.ACCEPTED);
+    }
+
     @PostMapping("/makeOffer/{uuid}")
     public ResponseEntity<UserRequest> createOffer(
             @PathVariable String uuid,

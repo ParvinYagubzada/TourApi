@@ -15,7 +15,7 @@ spring:
     addresses: ${CLOUDAMQP_URL}
 
   datasource:
-    url: jdbc:postgresql://192.168.0.100:5432/test
+    url: jdbc:postgresql://192.168.0.100:5432/tour_api
     username: postgres
     password: 3262015Aze3262!
 

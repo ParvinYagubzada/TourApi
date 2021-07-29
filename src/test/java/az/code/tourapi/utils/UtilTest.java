@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UtilTest {
 
     @Test
-    @DisplayName("Util - checkTime - Valid")
+    @DisplayName("Util - checkTime() - Valid")
     void checkTime() {
         LocalTime now = LocalTime.parse("01:00:00", timeFormatter);
         String start = "08:00:00";
@@ -35,7 +35,7 @@ class UtilTest {
     }
 
     @Test
-    @DisplayName("Util - createImage - Valid")
+    @DisplayName("Util - createImage() - Valid")
     void createImage() {
         OfferDTO dto = OfferDTO.builder()
                 .description("salary").travelDates("time")
@@ -47,7 +47,7 @@ class UtilTest {
     }
 
     @Test
-    @DisplayName("Util - convertToken - Valid")
+    @DisplayName("Util - convertToken() - Valid")
     void convertTokenValid() {
         UserData expected = new UserData();
         expected.setAgencyName(AGENCY_NAME);
@@ -59,19 +59,19 @@ class UtilTest {
     }
 
     @Test
-    @DisplayName("Util - convertToken - Invalid Format")
+    @DisplayName("Util - convertToken() - Invalid Format")
     void convertTokenInvalidFormat() {
         assertThrows(InvalidTokenFormat.class, () -> convertToken(TEST_STRING));
     }
 
     @Test
-    @DisplayName("Util - convertToken - Invalid Value")
+    @DisplayName("Util - convertToken() - Invalid Value")
     void convertTokenInvalidValue() {
         assertThrows(InvalidTokenFormat.class, () -> convertToken(VALID_TOKEN_INVALID_VALUE));
     }
 
     @Test
-    @DisplayName("Util - convertToken - Not Verified Email")
+    @DisplayName("Util - convertToken() - Not Verified Email")
     void convertTokenNotVerifiedEmail() {
         assertThrows(EmailNotVerified.class, () -> convertToken(NOT_VERIFIED_EMAIL_TOKEN));
     }
