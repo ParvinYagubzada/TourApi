@@ -115,18 +115,6 @@ class MappersTest {
         assertEquals(expected, mappers.rawToRequest(rawRequest, now));
     }
 
-//    @Test
-//    @DisplayName("Mappers - RawRequest to Request - In working hours long")
-//    void rawToRequestWorkingHoursLong() {
-//        LocalTime now = LocalTime.parse("18:00:00", timeFormatter);
-//
-//        RawRequest rawRequest = createRawRequest();
-//        Request expected = createExpectedRequest()
-//                .expirationTime(LocalDate.now().atTime(now).plusHours(8))
-//                .build();
-//        assertEquals(expected, mappers.rawToRequest(rawRequest, now));
-//    }
-
     @Test
     @DisplayName("Mappers - RawRequest to Request - Before working hours")
     void rawToRequestBeforeWorkingHours() {
