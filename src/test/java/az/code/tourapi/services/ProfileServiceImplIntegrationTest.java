@@ -4,6 +4,7 @@ import az.code.tourapi.enums.UserRequestStatus;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @TestInstance(PER_CLASS)
+@AutoConfigureTestDatabase
 @TestMethodOrder(OrderAnnotation.class)
 class ProfileServiceImplIntegrationTest {
 
@@ -80,7 +82,7 @@ class ProfileServiceImplIntegrationTest {
     }
 
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
 
     @BeforeAll
     public void init() throws SQLException {
@@ -89,13 +91,6 @@ class ProfileServiceImplIntegrationTest {
         when(clock.getZone()).thenReturn(fixedClock.getZone());
         try (Connection conn = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(conn, new ClassPathResource("profile-service-sample-data.sql"));
-        }
-    }
-
-    @AfterAll
-    public void clean() throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("truncate-data.sql"));
         }
     }
 }

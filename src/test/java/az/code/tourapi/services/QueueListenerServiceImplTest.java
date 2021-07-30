@@ -89,7 +89,7 @@ class QueueListenerServiceImplTest {
     }
 
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
 
     @BeforeAll
     public void init() throws SQLException {

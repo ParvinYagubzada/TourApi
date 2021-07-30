@@ -34,7 +34,7 @@ INSERT INTO public.requests (uuid, status, address_from, address_to, budget, cre
 INSERT INTO public.requests (uuid, status, address_from, address_to, budget, creation_time, expiration_time, language, tour_type, travel_end_date, travel_start_date, traveller_count) VALUES ('eb19a117-930e-41a1-92e1-225e7d9c8753', false, 'Black Gate', 'Fens of Serech', 843, '2021-07-29 23:45:25.770903', '2021-07-29 10:18:37.356000', 'RU', 'Cirith Ungol', '1961-11-03', '2003-05-27', '979');
 INSERT INTO public.requests (uuid, status, address_from, address_to, budget, creation_time, expiration_time, language, tour_type, travel_end_date, travel_start_date, traveller_count) VALUES ('37179d19-800c-4757-a32d-8749a015d50f', false, 'Eastfarthing', 'Inn of the Prancing Pony', 689, '2021-07-29 23:45:25.774298', '2021-07-29 17:00:00.000000', 'EN', 'Doriath', '1994-01-30', '1979-02-04', '323');
 
-INSERT INTO public.customers (username, first_name, last_name, phone_number, user_id) VALUES ('test', 'test1', 'test2', null, '12345678');
+INSERT INTO public.customers (user_id, first_name, last_name, phone_number, username) VALUES ('test', 'test1', 'test2', null, '12345678');
 
 INSERT INTO public.offers (agency_name, uuid, creation_time, description, status, notes, price, travel_dates) VALUES ('Global Travel', '6a2bb2f2-5162-4242-897f-30eb145229d4', '2021-07-29 23:45:26.173429', 'salary', true, 'sock', 386, 'time');
 INSERT INTO public.offers (agency_name, uuid, creation_time, description, status, notes, price, travel_dates) VALUES ('Global Travel', '7444627a-f71c-4f23-ae80-d5f00c7eb958', '2021-07-29 23:45:26.333821', 'salary', true, 'sock', 386, 'time');

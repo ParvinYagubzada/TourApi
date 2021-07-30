@@ -9,25 +9,30 @@ import az.code.tourapi.security.AuthConfig;
 import az.code.tourapi.security.SecurityServiceImpl;
 import az.code.tourapi.utils.representations.MailRepresentation;
 import az.code.tourapi.utils.representations.SimpleUserRepresentation;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
 
 import static az.code.tourapi.TourApiApplicationTests.TEST_STRING;
 import static az.code.tourapi.TourApiApplicationTests.UUID;
-import static az.code.tourapi.utils.Mappers.timeFormatter;
-import static az.code.tourapi.utils.Util.formatter;
+import static az.code.tourapi.utils.Util.dateFormatter;
+import static az.code.tourapi.utils.Util.parseTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@TestInstance(PER_CLASS)
+@MockBean(MailUtil.class)
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 class MappersTest {
 
@@ -35,6 +40,19 @@ class MappersTest {
     private Mappers mappers;
     @Autowired
     private AuthConfig config;
+
+    @Value("${app.start-time}")
+    private String startTimeString;
+    @Value("${app.end-time}")
+    private String endTimeString;
+    @Value("${app.deadline}")
+    private Integer deadlineHours;
+
+    @BeforeAll
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void init() {
+        Mockito.mockStatic(Util.class, Mockito.CALLS_REAL_METHODS);
+    }
 
     @Test
     @DisplayName("Mappers - AcceptedOffer to CustomerInfo")
@@ -106,37 +124,17 @@ class MappersTest {
     @Test
     @DisplayName("Mappers - RawRequest to Request - In working hours")
     void rawToRequestWorkingHours() {
-        LocalTime now = LocalTime.parse("10:00:00", timeFormatter);
-
+        LocalTime now = parseTime("10:00:00");
+        LocalDateTime time = LocalDate.now().atTime(now).plusHours(deadlineHours);
+        Mockito.when(Util.calculateExpirationTime(
+                parseTime(startTimeString),
+                parseTime(endTimeString),
+                now,
+                deadlineHours
+        )).thenReturn(time);
         RawRequest rawRequest = createRawRequest();
         Request expected = createExpectedRequest()
-                .expirationTime(LocalDate.now().atTime(now).plusHours(8))
-                .build();
-        assertEquals(expected, mappers.rawToRequest(rawRequest, now));
-    }
-
-    @Test
-    @DisplayName("Mappers - RawRequest to Request - Before working hours")
-    void rawToRequestBeforeWorkingHours() {
-        LocalTime now = LocalTime.parse("08:00:00", timeFormatter);
-        LocalTime begin = LocalTime.parse("09:00:00", timeFormatter);
-
-        RawRequest rawRequest = createRawRequest();
-        Request expected = createExpectedRequest()
-                .expirationTime(LocalDate.now().atTime(begin).plusHours(8))
-                .build();
-        assertEquals(expected, mappers.rawToRequest(rawRequest, now));
-    }
-
-    @Test
-    @DisplayName("Mappers - RawRequest to Request - After working hours")
-    void rawToRequestAfterWorkingHours() {
-        LocalTime now = LocalTime.parse("20:00:00", timeFormatter);
-        LocalTime begin = LocalTime.parse("09:00:00", timeFormatter);
-
-        RawRequest rawRequest = createRawRequest();
-        Request expected = createExpectedRequest()
-                .expirationTime(LocalDate.now().plusDays(1).atTime(begin).plusHours(8))
+                .expirationTime(time)
                 .build();
         assertEquals(expected, mappers.rawToRequest(rawRequest, now));
     }
@@ -154,8 +152,8 @@ class MappersTest {
         return Request.builder()
                 .uuid(UUID).language(TEST_STRING).tourType(TEST_STRING)
                 .addressTo(TEST_STRING).addressFrom(TEST_STRING)
-                .travelStartDate(LocalDate.parse("12.12.1212", formatter))
-                .travelEndDate(LocalDate.parse("12.12.1213", formatter))
+                .travelStartDate(LocalDate.parse("12.12.1212", dateFormatter))
+                .travelEndDate(LocalDate.parse("12.12.1213", dateFormatter))
                 .travellerCount("1 man 2 men").budget(123)
                 .active(true);
     }

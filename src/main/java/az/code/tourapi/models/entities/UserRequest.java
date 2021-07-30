@@ -34,7 +34,7 @@ public class UserRequest {
     private Request request;
 
     @OneToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "customer_id", referencedColumnName = "username")
+    @JoinColumn(name = "customer_id", referencedColumnName = "user_id")
     private CustomerInfo customer;
 
     @OneToOne(cascade = CascadeType.MERGE)

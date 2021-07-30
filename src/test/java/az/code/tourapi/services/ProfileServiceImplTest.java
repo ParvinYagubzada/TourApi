@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import static az.code.tourapi.TourApiApplicationTests.*;
 import static az.code.tourapi.enums.UserRequestStatus.EXPIRED;
-import static az.code.tourapi.utils.Mappers.timeFormatter;
+import static az.code.tourapi.utils.Util.timeFormatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -56,8 +56,8 @@ class ProfileServiceImplTest {
     @BeforeEach
     public void init() {
         service = new ProfileServiceImpl(template, userRepo, offerRepo, mappers, clock);
-        ReflectionTestUtils.setField(service,"startTimeString", "09:00:00");
-        ReflectionTestUtils.setField(service,"endTimeString", "19:00:00");
+        ReflectionTestUtils.setField(service, "startTimeString", "09:00:00");
+        ReflectionTestUtils.setField(service, "endTimeString", "19:00:00");
     }
 
     @Test

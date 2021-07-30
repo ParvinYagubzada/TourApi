@@ -208,7 +208,7 @@ class ProfileControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
-    private <T> String getJson() throws JsonProcessingException {
+    private String getJson() throws JsonProcessingException {
         return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(ProfileControllerTest.OFFER_DTO);
     }
 }

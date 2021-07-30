@@ -5,7 +5,7 @@ import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.repositories.UserRequestRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
@@ -20,9 +20,8 @@ import static az.code.tourapi.models.entities.UserRequest.Fields.status;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
-
-@SpringBootTest
 @TestInstance(PER_CLASS)
+@DataJpaTest(showSql = false)
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 class SpecificationsTest {
 
@@ -61,19 +60,12 @@ class SpecificationsTest {
     }
 
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
 
     @BeforeAll
     public void init() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(conn, new ClassPathResource("specifications-sample-data.sql"));
-        }
-    }
-
-    @AfterAll
-    public void clean() throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("truncate-data.sql"));
         }
     }
 }

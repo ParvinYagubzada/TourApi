@@ -17,21 +17,21 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static az.code.tourapi.models.dtos.OfferDTO.*;
-import static az.code.tourapi.utils.Mappers.timeFormatter;
 
 public class Util {
 
-    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public static Pageable preparePage(Integer pageNo, Integer pageSize, String sortBy) {
         return PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
@@ -45,10 +45,12 @@ public class Util {
         }
     }
 
+    public static LocalTime parseTime(String time) {
+        return LocalTime.parse(time, timeFormatter);
+    }
+
     public static boolean checkTime(String startTimeString, String endTimeString, LocalTime now) {
-        LocalTime start = LocalTime.parse(startTimeString, timeFormatter);
-        LocalTime end = LocalTime.parse(endTimeString, timeFormatter);
-        return now.isAfter(end) || now.isBefore(start);
+        return now.isAfter(parseTime(endTimeString)) || now.isBefore(parseTime(startTimeString));
     }
 
     @SneakyThrows
@@ -88,5 +90,22 @@ public class Util {
         } catch (IndexOutOfBoundsException | NullPointerException | JsonProcessingException e) {
             throw new InvalidTokenFormat();
         }
+    }
+
+    public static LocalDateTime calculateExpirationTime(LocalTime start, LocalTime end, LocalTime now, Integer deadlineHours) {
+        Duration deadline = Duration.ofHours(deadlineHours);
+        Duration workingHours = Duration.between(start, end);
+        Duration leftHours = Duration.between(now, end);
+        long days = leftHours.isNegative() || deadline.compareTo(leftHours) > 0 ? 1 : 0;
+        LocalTime time = leftHours.compareTo(deadline) >= 0 && leftHours.compareTo(workingHours) < 0 ? now : start;
+        deadline = deadline.minus(
+                leftHours.isNegative() || leftHours.compareTo(deadline) >= 0 ? Duration.ZERO :
+                        leftHours.compareTo(workingHours) > 0 && deadline.compareTo(workingHours) > 0 ?
+                                workingHours : leftHours
+        );
+        days += deadline.dividedBy(workingHours);
+        long leftMillis = deadline.toMillis() % workingHours.toMillis();
+        leftMillis = leftMillis == 0 ? workingHours.toMillis() - TimeUnit.DAYS.toMillis(1) : leftMillis;
+        return LocalDate.now().plusDays(days).atTime(time).plus(leftMillis, ChronoUnit.MILLIS);
     }
 }

@@ -3,7 +3,9 @@ server:
 
 spring:
   profiles:
-    active: test
+    active:
+      - test
+      - no-authConfig
 
   datasource:
     url: jdbc:postgresql://192.168.0.100:5432/tour_test
@@ -15,15 +17,12 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: subscriptonmanagmentmailsender@gmail.com
-    password: 32620155
-    properties.mail.smtp.auth: true
-    properties.mail.smtp.starttls.enable: true
-    properties.mail.properties.mail.transport.protocol: smtp
-    properties.mail.debug: true
+  autoconfigure:
+    exclude:
+      - org.keycloak.adapters.springboot.KeycloakAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
 
 app:
   start-time: "09:00:00"
@@ -32,27 +31,20 @@ app:
   expiration-check-duration: PT1H
 
 keycloak:
-  auth-server-url: http://localhost:8180/auth
-  realm: Tour
-  resource: tour-app
-  bearer-only: true
-  ssl-required: external
-  use-resource-role-mappings: true
-  credentials.secret: b5afeb36-73d2-4c85-84ee-aeb8d58abccf
+  auth-server-url: test
+  realm: test
+  resource: test
+  credentials.secret: test
 
 auth:
   mails:
     verification:
-      subject: Tour.tap account verification
-      context: Please click this link (%s) to verify your account.
+      subject: test
+      context: test
       urls:
-        verification-url: http://localhost:8000/api/v1/auth/verify?token=%s&username=%s
-    reset-password:
-      subject: Tour.tap account reset password
-      context: Please click this link (%s) to reset your account password.
-      urls:
-        reset-url: http://localhost:8000/api/v1/auth/resetPassword?token=%s&username=%s
+        verification-url: test
+
   users:
     admin:
-      username: parvinyy@code.edu.az
-      password: 3262015
+      username: test
+      password: test
