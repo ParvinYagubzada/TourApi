@@ -1,8 +1,6 @@
 package az.code.tourapi.controllers;
 
-import az.code.tourapi.exceptions.InvalidVerificationToken;
-import az.code.tourapi.exceptions.LoginException;
-import az.code.tourapi.exceptions.UserNotFound;
+import az.code.tourapi.exceptions.*;
 import az.code.tourapi.models.dtos.*;
 import az.code.tourapi.security.SecurityService;
 import az.code.tourapi.security.TokenInterceptor;
@@ -34,6 +32,11 @@ class SecurityControllerTest {
 
     public static final String BASE_URL = "/api/v1/auth";
     public static final ObjectMapper mapper = new ObjectMapper();
+    private static final RegisterDTO SAMPLE_REGISTER_DTO = RegisterDTO.builder()
+            .agencyName(TEST_STRING).voen("1234567890")
+            .username("test1234").email("test@test.com")
+            .name(TEST_STRING).surname("i_am_a_tester")
+            .password("test123456").build();
 
     @Autowired
     private MockMvc mockMvc;
@@ -81,21 +84,55 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - register() - Valid")
     void register() throws Exception {
-        RegisterDTO dto = RegisterDTO.builder()
-                .agencyName(TEST_STRING).voen("1234567890")
-                .username("test1234").email("test@test.com")
-                .name(TEST_STRING).surname("i_am_a_tester")
-                .password("test123456").build();
         RegisterResponseDTO response = new RegisterResponseDTO("Created");
-        String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(dto);
+        String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(SAMPLE_REGISTER_DTO);
 
-        when(securityService.register(dto)).thenReturn(response);
+        when(securityService.register(SAMPLE_REGISTER_DTO)).thenReturn(response);
         mockMvc
                 .perform(post(BASE_URL + "/register")
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(requestJson))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("SecurityController - register() - NOT ACCEPTABLE")
+    void register_AgencyNameAlreadyExists() throws Exception {
+        String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(SAMPLE_REGISTER_DTO);
+        when(securityService.register(SAMPLE_REGISTER_DTO)).thenThrow(new AgencyNameAlreadyExists(TEST_STRING));
+        mockMvc
+                .perform(post(BASE_URL + "/register")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(requestJson))
+                .andExpect(content().string(TEST_STRING + " taken by another user."))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    @DisplayName("SecurityController - register() - NOT ACCEPTABLE")
+    void register_IdAlreadyTaken() throws Exception {
+        String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(SAMPLE_REGISTER_DTO);
+        when(securityService.register(SAMPLE_REGISTER_DTO)).thenThrow(new IdAlreadyTaken());
+        mockMvc
+                .perform(post(BASE_URL + "/register")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(requestJson))
+                .andExpect(content().string("Username or email already taken by another user."))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    @DisplayName("SecurityController - register() - INTERNAL SERVER ERROR")
+    void register_KeycloakInternalError() throws Exception {
+        String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(SAMPLE_REGISTER_DTO);
+        when(securityService.register(SAMPLE_REGISTER_DTO)).thenThrow(new KeycloakInternalError());
+        mockMvc
+                .perform(post(BASE_URL + "/register")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(requestJson))
+                .andExpect(content().string("Something happened when creating new user."))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test

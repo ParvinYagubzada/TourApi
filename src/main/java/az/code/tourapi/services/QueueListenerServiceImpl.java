@@ -42,5 +42,6 @@ public class QueueListenerServiceImpl implements QueueListenerService {
         userRepo.findById(id)
                 .ifPresent(userRequest -> userRepo
                         .save(userRequest.setCustomer(mappers.acceptedToCustomer(acceptedOffer))));
+        listenDeactivations(acceptedOffer.getUuid());
     }
 }

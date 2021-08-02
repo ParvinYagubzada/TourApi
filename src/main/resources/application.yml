@@ -2,22 +2,22 @@ server:
   port: 8000
 
 keycloak:
-  auth-server-url: http://localhost:8180/auth
+  auth-server-url: ${KEYCLOAK_SERVER_URL}
   realm: Tour
   resource: tour-app
   bearer-only: true
   ssl-required: external
   use-resource-role-mappings: true
-  credentials.secret: b5afeb36-73d2-4c85-84ee-aeb8d58abccf
+  credentials.secret: ${KEYCLOAK_SECRET}
 
 spring:
   rabbitmq:
     addresses: ${CLOUDAMQP_URL}
 
   datasource:
-    url: jdbc:postgresql://192.168.0.100:5432/tour_api
-    username: postgres
-    password: 3262015Aze3262!
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
     open-in-view: false
@@ -33,8 +33,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: subscriptonmanagmentmailsender@gmail.com
-    password: 32620155
+    username: ${MAIL_SENDER_USERNAME}
+    password: ${MAIL_SENDER_PASSWORD}
     properties.mail.smtp.auth: true
     properties.mail.smtp.starttls.enable: true
     properties.mail.properties.mail.transport.protocol: smtp
@@ -54,11 +54,11 @@ auth:
         reset-url: http://localhost:8000/api/v1/auth/resetPassword?token=%s&username=%s
   users:
     admin:
-      username: parvinyy@code.edu.az
-      password: 3262015
+      username: ${KEYCLOAK_CLI_USERNAME}
+      password: ${KEYCLOAK_CLI_PASSWORD}
 
 app:
   start-time: "09:00:00"
-  end-time: "19:00:00"
+  end-time: "23:00:00"
   deadline: 8
   expiration-check-duration: PT1H

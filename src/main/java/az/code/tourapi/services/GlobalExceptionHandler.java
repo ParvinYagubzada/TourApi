@@ -8,12 +8,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,66 +20,33 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Unauthorized.class)
-    public ResponseEntity<String> exceptionHandler(Unauthorized e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<String> exceptionHandler(LoginException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(EmailNotVerified.class)
-    public ResponseEntity<String> exceptionHandler(EmailNotVerified e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-    }
-
-    @ExceptionHandler(InvalidTokenFormat.class)
-    public ResponseEntity<String> exceptionHandler(InvalidTokenFormat e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-    }
-
-    @ExceptionHandler(InvalidVerificationToken.class)
-    public ResponseEntity<String> exceptionHandler(InvalidVerificationToken e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-    }
-
-    @ExceptionHandler(UserNotFound.class)
-    public ResponseEntity<String> exceptionHandler(UserNotFound e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(RequestNotFound.class)
-    public ResponseEntity<String> exceptionHandler(RequestNotFound e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(OutOfWorkingHours.class)
-    public ResponseEntity<String> exceptionHandler(OutOfWorkingHours e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-    }
-
-    @ExceptionHandler(InvalidUnarchive.class)
-    public ResponseEntity<String> exceptionHandler(InvalidUnarchive e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-    }
-
     @ExceptionHandler(RequestExpired.class)
-    public ResponseEntity<String> exceptionHandler(RequestExpired e) {
+    public ResponseEntity<String> conflictExceptionHandler(RequestExpired e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<String> exceptionHandler(IOException e) {
+    @ExceptionHandler({UserNotFound.class, RequestNotFound.class})
+    public ResponseEntity<String> notFoundExceptionHandler(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({Unauthorized.class, LoginException.class})
+    public ResponseEntity<String> unauthorizedExceptionHandler(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({KeycloakInternalError.class, IOException.class})
+    public ResponseEntity<String> internalServerExceptionHandler(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    @ExceptionHandler(MultipleOffers.class)
-    public String exceptionHandler(MultipleOffers e) {
-        return e.getMessage();
+    @ExceptionHandler({
+            SQLException.class, InvalidTokenFormat.class, AgencyNameAlreadyExists.class,
+            InvalidVerificationToken.class, IdAlreadyTaken.class, EmailNotVerified.class,
+            OutOfWorkingHours.class, InvalidUnarchive.class, MultipleOffers.class
+    })
+    public ResponseEntity<String> notAcceptableExceptionHandler(RuntimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 
     @Override

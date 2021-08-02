@@ -1,8 +1,6 @@
 package az.code.tourapi.security;
 
-import az.code.tourapi.exceptions.InvalidVerificationToken;
-import az.code.tourapi.exceptions.LoginException;
-import az.code.tourapi.exceptions.UserNotFound;
+import az.code.tourapi.exceptions.*;
 import az.code.tourapi.models.dtos.*;
 import az.code.tourapi.models.entities.User;
 import az.code.tourapi.models.entities.Verification;
@@ -80,6 +78,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public RegisterResponseDTO register(RegisterDTO register) {
+        checkAgencyName(register.getAgencyName());
         Keycloak keycloak = getRealmCli();
         UserRepresentation user = createUser(register);
         RealmResource realmResource = keycloak.realm(realm);
@@ -93,7 +92,24 @@ public class SecurityServiceImpl implements SecurityService {
             sendVerificationEmail(register);
         }
         keycloak.tokenManager().getAccessToken();
-        return RegisterResponseDTO.builder().message(response.getStatusInfo().toString()).build();
+        return handleKeycloakResponse(response.getStatusInfo().toString());
+    }
+
+    private RegisterResponseDTO handleKeycloakResponse(String message) {
+        switch (message) {
+            case "Created" -> {
+                return new RegisterResponseDTO(message);
+            }
+            case "Conflict" -> throw new IdAlreadyTaken();
+            default -> throw new KeycloakInternalError();
+        }
+    }
+
+    private void checkAgencyName(String agencyName) {
+        userRepo.findOne(Example.of(new User().setAgencyName(agencyName)))
+                .ifPresent(user -> {
+                    throw new AgencyNameAlreadyExists(agencyName);
+                });
     }
 
     private void sendVerificationEmail(RegisterDTO register) {
