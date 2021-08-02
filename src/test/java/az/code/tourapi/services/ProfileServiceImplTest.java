@@ -16,6 +16,7 @@ import org.junit.jupiter.api.MethodOrderer.MethodName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -51,11 +52,11 @@ class ProfileServiceImplTest {
     @Mock
     private Clock clock;
 
+    @InjectMocks
     private ProfileServiceImpl service;
 
     @BeforeEach
-    public void init() {
-        service = new ProfileServiceImpl(template, userRepo, offerRepo, mappers, clock);
+    void init() {
         ReflectionTestUtils.setField(service, "startTimeString", "09:00:00");
         ReflectionTestUtils.setField(service, "endTimeString", "19:00:00");
     }

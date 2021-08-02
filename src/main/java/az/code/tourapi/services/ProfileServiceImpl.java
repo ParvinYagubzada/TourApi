@@ -103,8 +103,8 @@ public class ProfileServiceImpl implements ProfileService {
         if (offerRepo.existsById(id))
             throw new MultipleOffers();
         File image = createImage(dto);
-        template.convertAndSend(REQUEST_EXCHANGE, REQUEST_KEY, new RawOffer(uuid, agencyName, Files
-                .readAllBytes(image.toPath())));
+        byte[] bytes = Files.readAllBytes(image.toPath());
+        template.convertAndSend(REQUEST_EXCHANGE, REQUEST_KEY, new RawOffer(uuid, agencyName, bytes));
         image.delete();
         return userRepo.save(userRequest.setOffer(mappers.dtoToOffer(dto, agencyName, uuid)));
     }

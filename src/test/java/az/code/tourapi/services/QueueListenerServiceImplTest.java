@@ -47,6 +47,23 @@ class QueueListenerServiceImplTest {
     @Autowired
     private UserRequestRepository userRequestRepo;
 
+    @Autowired
+    private DataSource dataSource;
+
+    @BeforeAll
+    void setUp() throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("triggers.sql"));
+        }
+    }
+
+    @AfterAll
+    void tearDown() throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("drop-triggers.sql"));
+        }
+    }
+
     @Test
     @DisplayName("QueueListenerService - listenRequests()")
     void listenRequests() {
@@ -86,22 +103,5 @@ class QueueListenerServiceImplTest {
         Optional<UserRequest> request = userRequestRepo.findById(new RequestId(agencyName, UUID));
         assertTrue(request.isPresent());
         assertEquals(mappers.acceptedToCustomer(offer), request.get().getCustomer());
-    }
-
-    @Autowired
-    private DataSource dataSource;
-
-    @BeforeAll
-    public void init() throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("triggers.sql"));
-        }
-    }
-
-    @AfterAll
-    public void cleanTriggers() throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("drop-triggers.sql"));
-        }
     }
 }

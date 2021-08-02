@@ -1,7 +1,10 @@
 package az.code.tourapi.models.dtos;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -20,7 +23,7 @@ class LoginDTOTest {
     private static Set<ConstraintViolation<LoginDTO>> violations;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         baseDTO = new LoginDTO();

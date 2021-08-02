@@ -23,7 +23,7 @@ class ResetPasswordDTOTest {
     private static Set<ConstraintViolation<ResetPasswordDTO>> violations;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         baseDTO = new ResetPasswordDTO();

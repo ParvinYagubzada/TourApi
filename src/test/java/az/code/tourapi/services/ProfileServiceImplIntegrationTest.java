@@ -32,6 +32,18 @@ class ProfileServiceImplIntegrationTest {
     private ProfileService service;
     @MockBean
     private Clock clock;
+    @Autowired
+    private DataSource dataSource;
+
+    @BeforeAll
+    void setUp() throws SQLException {
+        Clock fixedClock = Clock.fixed(DATE_TIME.atZone(SYSTEM_DEFAULT).toInstant(), SYSTEM_DEFAULT);
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("profile-service-sample-data.sql"));
+        }
+    }
 
     @Test
     @Order(1)
@@ -79,18 +91,5 @@ class ProfileServiceImplIntegrationTest {
                 0, 100, SORT_BY)).hasSize(2)
                 .filteredOn(userRequest -> userRequest.getStatus() == UserRequestStatus.EXPIRED &&
                         userRequest.isArchived());
-    }
-
-    @Autowired
-    private DataSource dataSource;
-
-    @BeforeAll
-    public void init() throws SQLException {
-        Clock fixedClock = Clock.fixed(DATE_TIME.atZone(SYSTEM_DEFAULT).toInstant(), SYSTEM_DEFAULT);
-        when(clock.instant()).thenReturn(fixedClock.instant());
-        when(clock.getZone()).thenReturn(fixedClock.getZone());
-        try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("profile-service-sample-data.sql"));
-        }
     }
 }

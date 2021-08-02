@@ -27,6 +27,15 @@ class SpecificationsTest {
 
     @Autowired
     private UserRequestRepository userRequestRepo;
+    @Autowired
+    private DataSource dataSource;
+
+    @BeforeAll
+    void setUp() throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("specifications-sample-data.sql"));
+        }
+    }
 
     @Test
     @DisplayName("Specifications - sameValueWithId() - agencyName")
@@ -57,15 +66,5 @@ class SpecificationsTest {
         assertThat(requests).hasSize(600)
                 .filteredOn(userRequest -> !userRequest.isArchived())
                 .hasSize(600);
-    }
-
-    @Autowired
-    private DataSource dataSource;
-
-    @BeforeAll
-    public void init() throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("specifications-sample-data.sql"));
-        }
     }
 }

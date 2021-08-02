@@ -5,6 +5,7 @@ import az.code.tourapi.exceptions.LoginException;
 import az.code.tourapi.exceptions.UserNotFound;
 import az.code.tourapi.models.dtos.*;
 import az.code.tourapi.security.SecurityService;
+import az.code.tourapi.security.TokenInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.*;
@@ -17,12 +18,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static az.code.tourapi.TourApiApplicationTests.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestInstance(PER_CLASS)
 @ActiveProfiles("test-mvc")
 @WebMvcTest(SecurityController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -36,17 +39,20 @@ class SecurityControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private SecurityService securityService;
+    @MockBean
+    private TokenInterceptor tokenInterceptor;
 
     @BeforeAll
-    static void start() {
+    void setUp() throws Exception {
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        when(tokenInterceptor.preHandle(any(), any(), any())).thenReturn(true);
     }
 
     @Test
     @DisplayName("SecurityController - login() - Valid")
     void login() throws Exception {
         LoginDTO dto = LoginDTO.builder().email("test@test.com").password("12345678").build();
-        LoginResponseDTO response = new LoginResponseDTO("token");
+        LoginResponseDTO response = new LoginResponseDTO(TEST_STRING);
         String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(dto);
 
         when(securityService.login(dto)).thenReturn(response);
@@ -95,12 +101,12 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - verify() - Valid")
     void verify() throws Exception {
-        String token = TEST_STRING, username = TEST_STRING, response = "User verified.";
-        when(securityService.verify(token, username)).thenReturn(response);
+        String response = "User verified.";
+        when(securityService.verify(TEST_STRING, TEST_STRING)).thenReturn(response);
         mockMvc
                 .perform(get(BASE_URL + "/verify")
-                        .param("token", token)
-                        .param("username", username))
+                        .param("token", TEST_STRING)
+                        .param("username", TEST_STRING))
                 .andExpect(content().string(response))
                 .andExpect(status().isOk());
     }
@@ -108,38 +114,35 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - verify() - NOT FOUND")
     void verify_UserNotFount() throws Exception {
-        String token = TEST_STRING, username = TEST_STRING;
-        when(securityService.verify(token, username)).thenThrow(new UserNotFound());
+        when(securityService.verify(TEST_STRING, TEST_STRING)).thenThrow(new UserNotFound());
         mockMvc
                 .perform(get(BASE_URL + "/verify")
-                        .param("token", token)
-                        .param("username", username))
+                        .param("token", TEST_STRING)
+                        .param("username", TEST_STRING))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("SecurityController - verify() - NOT ACCEPTABLE")
     void verify_InvalidVerificationToken() throws Exception {
-        String token = TEST_STRING, username = TEST_STRING;
-        when(securityService.verify(token, username)).thenThrow(new InvalidVerificationToken());
+        when(securityService.verify(TEST_STRING, TEST_STRING)).thenThrow(new InvalidVerificationToken());
         mockMvc
                 .perform(get(BASE_URL + "/verify")
-                        .param("token", token)
-                        .param("username", username))
+                        .param("token", TEST_STRING)
+                        .param("username", TEST_STRING))
                 .andExpect(status().isNotAcceptable());
     }
 
     @Test
     @DisplayName("SecurityController - sendResetPasswordUrl() - Valid")
     void sendResetPasswordUrl() throws Exception {
-        String email = TEST_STRING;
-        doNothing().when(securityService).sendResetPasswordUrl(email);
+        doNothing().when(securityService).sendResetPasswordUrl(TEST_STRING);
         mockMvc
                 .perform(post(BASE_URL + "/sendResetPasswordUrl")
                         .contentType(APPLICATION_JSON_UTF8)
-                        .content(email))
+                        .content(TEST_STRING))
                 .andExpect(status().isOk());
-        Mockito.verify(securityService, times(1)).sendResetPasswordUrl(email);
+        Mockito.verify(securityService, times(1)).sendResetPasswordUrl(TEST_STRING);
     }
 
     @Test
@@ -163,19 +166,18 @@ class SecurityControllerTest {
     @Test
     @DisplayName("SecurityController - changePassword() - Valid")
     void changePassword() throws Exception {
-        String username = "pervinuser";
         UpdatePasswordDTO dto = UpdatePasswordDTO.builder()
                 .oldPassword("12345678")
                 .newPassword("123456789").build();
         String requestJson = mapper.writer().withDefaultPrettyPrinter().writeValueAsString(dto);
 
-        doNothing().when(securityService).changePassword(username, dto);
+        doNothing().when(securityService).changePassword(TEST_STRING, dto);
         mockMvc
                 .perform(post(BASE_URL + "/profile/changePassword")
                         .contentType(APPLICATION_JSON_UTF8)
-                        .header(AUTHORIZATION, TOKEN)
+                        .requestAttr(ATTR_NAME, USER_DATA)
                         .content(requestJson))
                 .andExpect(status().isAccepted());
-        Mockito.verify(securityService, times(1)).changePassword(username, dto);
+        Mockito.verify(securityService, times(1)).changePassword(TEST_STRING, dto);
     }
 }

@@ -6,6 +6,7 @@ import az.code.tourapi.models.entities.Offer;
 import az.code.tourapi.models.entities.Request;
 import az.code.tourapi.models.entities.RequestId;
 import az.code.tourapi.models.entities.UserRequest;
+import az.code.tourapi.security.TokenInterceptor;
 import az.code.tourapi.services.ProfileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,7 @@ import static az.code.tourapi.TourApiApplicationTests.*;
 import static az.code.tourapi.enums.UserRequestStatus.NEW_REQUEST;
 import static az.code.tourapi.enums.UserRequestStatus.OFFER_MADE;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -48,10 +50,17 @@ class ProfileControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private ProfileService profileService;
+    @MockBean
+    private TokenInterceptor tokenInterceptor;
 
     @BeforeAll
-    void start() {
+    void setUp() {
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+    }
+
+    @BeforeEach
+    void setUpEach() throws Exception {
+        when(tokenInterceptor.preHandle(any(), any(), any())).thenReturn(true);
     }
 
     @Test
@@ -63,7 +72,7 @@ class ProfileControllerTest {
         mockMvc
                 .perform(get(BASE_URL + "/requests", UUID)
                         .param("pageSize", "4")
-                        .header(AUTHORIZATION, TOKEN))
+                        .requestAttr(ATTR_NAME, USER_DATA))
                 .andExpect(content().string(mapper.writeValueAsString(requests)))
                 .andExpect(status().isOk());
     }
@@ -76,7 +85,7 @@ class ProfileControllerTest {
         when(profileService.getRequest(AGENCY_NAME, UUID)).thenReturn(response);
         mockMvc
                 .perform(get(BASE_URL + "/requests/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN))
+                        .requestAttr(ATTR_NAME, USER_DATA))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
                 .andExpect(status().isOk());
     }
@@ -88,7 +97,7 @@ class ProfileControllerTest {
         when(profileService.archiveRequest(AGENCY_NAME, UUID)).thenReturn(response);
         mockMvc
                 .perform(post(BASE_URL + "/archive/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN))
+                        .requestAttr(ATTR_NAME, USER_DATA))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
                 .andExpect(status().isAccepted());
     }
@@ -99,7 +108,7 @@ class ProfileControllerTest {
         when(profileService.archiveRequest(AGENCY_NAME, UUID)).thenThrow(new RequestNotFound());
         mockMvc
                 .perform(post(BASE_URL + "/archive/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN))
+                        .requestAttr(ATTR_NAME, USER_DATA))
                 .andExpect(content().string("This request does not exists."))
                 .andExpect(status().isNotFound());
     }
@@ -111,7 +120,7 @@ class ProfileControllerTest {
         when(profileService.unarchiveRequest(AGENCY_NAME, UUID)).thenReturn(response);
         mockMvc
                 .perform(post(BASE_URL + "/unarchive/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN))
+                        .requestAttr(ATTR_NAME, USER_DATA))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
                 .andExpect(status().isAccepted());
     }
@@ -122,7 +131,7 @@ class ProfileControllerTest {
         when(profileService.unarchiveRequest(AGENCY_NAME, UUID)).thenThrow(new InvalidUnarchive());
         mockMvc
                 .perform(post(BASE_URL + "/unarchive/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN))
+                        .requestAttr(ATTR_NAME, USER_DATA))
                 .andExpect(content().string("You can't unarchive EXPIRED or ACCEPTED requests."))
                 .andExpect(status().isNotAcceptable());
     }
@@ -134,7 +143,7 @@ class ProfileControllerTest {
         when(profileService.deleteRequest(AGENCY_NAME, UUID)).thenReturn(response);
         mockMvc
                 .perform(post(BASE_URL + "/delete/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN))
+                        .requestAttr(ATTR_NAME, USER_DATA))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
                 .andExpect(status().isAccepted());
     }
@@ -150,7 +159,7 @@ class ProfileControllerTest {
         when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenReturn(response);
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN)
+                        .requestAttr(ATTR_NAME, USER_DATA)
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(getJson()))
                 .andExpect(content().string(mapper.writeValueAsString(response)))
@@ -163,7 +172,7 @@ class ProfileControllerTest {
         when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new RequestExpired());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN)
+                        .requestAttr(ATTR_NAME, USER_DATA)
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(getJson()))
                 .andExpect(content().string("This request is expired."))
@@ -176,7 +185,7 @@ class ProfileControllerTest {
         when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new MultipleOffers());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN)
+                        .requestAttr(ATTR_NAME, USER_DATA)
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(getJson()))
                 .andExpect(content().string("You can't have more than one offer."))
@@ -189,7 +198,7 @@ class ProfileControllerTest {
         when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new OutOfWorkingHours());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN)
+                        .requestAttr(ATTR_NAME, USER_DATA)
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(getJson()))
                 .andExpect(content().string("You can't make an offer out of working hours."))
@@ -202,7 +211,7 @@ class ProfileControllerTest {
         when(profileService.makeOffer(AGENCY_NAME, UUID, OFFER_DTO)).thenThrow(new IOException());
         mockMvc
                 .perform(post(BASE_URL + "/makeOffer/{uuid}", UUID)
-                        .header(AUTHORIZATION, TOKEN)
+                        .requestAttr(ATTR_NAME, USER_DATA)
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(getJson()))
                 .andExpect(status().isInternalServerError());

@@ -50,7 +50,7 @@ class MappersTest {
 
     @BeforeAll
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void init() {
+    void setUp() {
         Mockito.mockStatic(Util.class, Mockito.CALLS_REAL_METHODS);
     }
 

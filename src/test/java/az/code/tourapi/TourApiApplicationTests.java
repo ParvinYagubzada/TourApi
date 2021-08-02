@@ -1,5 +1,6 @@
 package az.code.tourapi;
 
+import az.code.tourapi.models.UserData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.List;
 
 import static az.code.tourapi.utils.Util.timeFormatter;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -21,8 +23,7 @@ public class TourApiApplicationTests {
     public static final String UUID = "a46d6230-c521-46ba-9957-1bb0347370e7";
     public static final String AGENCY_NAME = "Global Travel";
 
-    public static final String AUTHORIZATION = "Authorization";
-    public static final String TOKEN = ".eyJleHAiOjE2MjY5OTg2MDQsImlhdCI6MTYyNjk2MjYwNCwianRpIjoiZmJlOTdmZDYtNTNlMC00MGZkLWFkMzItZDExOTIwNjI3NjFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL2F1dGgvcmVhbG1zL1RvdXIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMmFkYTk2ZDAtNmExMC00ZThjLTg2YmQtMzQzOGE3Zjk2OWVmIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidG91ci1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiN2I1NGFhMjktMWE3Yy00NDFkLWIzMDItMTNiZDQyZmIzZTFjIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiYXBwLXVzZXIiLCJkZWZhdWx0LXJvbGVzLXRvdXIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJ0b3VyLWFwcCI6eyJyb2xlcyI6WyJ1c2VyIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJjcmVhdGlvbl90aW1lIjoxNjI2OTYxOTQwOTI2LCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYWdlbmN5X25hbWUiOiJHbG9iYWwgVHJhdmVsIiwidm9lbiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiUGVydmluIFlhcXViemFkZSIsInByZWZlcnJlZF91c2VybmFtZSI6InBlcnZpbnVzZXIiLCJnaXZlbl9uYW1lIjoiUGVydmluIiwiZmFtaWx5X25hbWUiOiJZYXF1YnphZGUiLCJlbWFpbCI6InBhcnZpbnl5QGNvZGUuZWR1LmF6In0.";
+    public static final String ATTR_NAME = "user";
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(APPLICATION_JSON.getType(), APPLICATION_JSON.getSubtype(), UTF_8);
 
     public static final ZoneId SYSTEM_DEFAULT = ZoneId.systemDefault();
@@ -36,6 +37,16 @@ public class TourApiApplicationTests {
     public static final String VALID_TOKEN_INVALID_VALUE = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJXRmxGeTVuT2dNRnM5QWVadU5CTFM5czQ0d3h4Y19CZzVOVnoycXRaX1FrIn0.eyJleHAiOjE2MjY4NDg2OTAsImlhdCI6MTYyNjgxMjY5MCwianRpIjoiYmRiOGQzNzktNjc4YS00NmUxLThjMTMtY2E0YTcwNWI3MTZmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL2F1dGgvcmVhbG1zL1RvdXIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZjliNzczZGEtZTI5Yy00ODNiLTlhM2ItNTcyZjkxM2RhN2UyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidG91ci1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiN2Q4YmQ4ZDktMGNiNy00ZWE3LWFhYmEtMDcxNWE5NzU2MzQxIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy10b3VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiY3JlYXRpb25fdGltZSI6MTYyNjQ0NjQyNDkzNiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJBZG1pbiBBZG1pbiIsInByZWZlcnJlZF91c2VybmFtZSI6ImFkbWludXNlciIsImdpdmVuX25hbWUiOiJBZG1pbiIsImZhbWlseV9uYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSJ9.jGQlOtzC9o1I2gwKFaewSy3IYfOWpYSG5nAyRMi5FDFoqzdJ1lx9O7p4iLv3b1UWqumGcy9ALpGL-w3jgqpENCiPFTNWMyVbxt06HIBQx6D8yUok4EjzzitIuALW7nxR9YnJ8tZ01AfSXpZhm4kgPfZr1oQdIdU0Y_fu_UMdJ0fAb3awtjJIWoS35_sCPOtOzJyDfc9ZDfCzVJA-DNbsSlAFfqg1j3YG0MtjlSXyEZZNXNmCf7e5hfXRxv_CZMbkWGVJMehi7oFu9kbABXyKa6URyAWfpr8qtgsArr2H6AhN3AOsC4lm9g5xLIvwog1AdVhDKHLxEZFq4hSnlZ6ZuQ.eyJleHAiOjE2MjY4NDg1MzgsImlhdCI6MTYyNjgxMjUzOCwianRpIjoiMDZlNDNmYzItODEzNC00NGNkLThlN2YtM2M3Y2UwNzNjMjhhIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL2F1dGgvcmVhbG1zL1RvdXIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZjliNzczZGEtZTI5Yy00ODNiLTlhM2ItNTcyZjkxM2RhN2UyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidG91ci1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiYWVmZTk0YTItNzRhZi00Y2U3LWE3ODAtZWZkZjZkMDY5NzlkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIiwiZGVmYXVsdC1yb2xlcy10b3VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiY3JlYXRpb25fdGltZSI6MTYyNjQ0NjQyNDkzNiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImFnZW5jeV9uYW1lIjoiUGFzaGEgQmFuayIsIm5hbWUiOiJBZG1pbiBBZG1pbiIsInByZWZlcnJlZF91c2VybmFtZSI6ImFkbWludXNlciIsImdpdmVuX25hbWUiOiJBZG1pbiIsImZhbWlseV9uYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSJ9.BUTzmMdcJ-v3VLGHclO9t3Iulzdk-2o-vSWHUvtLBr9g5TdPnQ1ZVZLr39Havjp-x4SNJ8Zq3gdhFw2jnh0jWQ5wkhuQ9tyQufBuI8TfxpaGwWziA_dPnLO9QF9V_Gso-GKvS_07nM4kgBnxDA7ZxsRbvXwhrRGeUNl66uxxRw_bpyPziv37zNm-uA1wJNvOUZYkV8ZeSqGjQerd0-KNo0S1fVKYi3M5WWCzqT3xDT_ylMOqGMUNPvJWJpvuYBEX8qkMfYcUze4T7ylvS3SqtZuR6XwzucmCkZd4Sqkdo8xOM-dnXdkh9Bv2slSEUZIdcYCESj8icKU_uBdbcYAHGQ";
     public static final String TEST_TRAVEL_DATES = "15.12.2021-17.12.2021";
     public static final String LONG_STRING = "I am a long test string";
+
+    public static final UserData USER_DATA = new UserData(TEST_STRING, AGENCY_NAME, TEST_STRING, "test@test.com", DATE_TIME);
+
+    public static final List<String> EXPIRED_REQUEST_UUIDS = List.of(
+            "058bb0ea-f4d8-4f98-b6d0-0b1ff61bfd0b", "8274c44f-6777-4aeb-a0bc-94a3f0bb8e55",
+            "66706159-7ea7-4294-8913-99af49e32952", "fa05e184-cf47-4ba2-be5e-b64c2c8e57a7",
+            "907ceb82-8d34-4869-92ee-fad7a04a2018", "89a560e6-16eb-44fc-8527-031e7cf5eab4",
+            "f57896f2-2e64-4aec-9114-08963cc315fd", "15523c51-84bf-460f-8298-edaa91189b91",
+            "00cff7cf-62a5-47be-a513-b8d76ca9e5ce", "cfb54119-619b-4bd9-a917-aa1ed846b8e7"
+    );
 
     @Test
     @DisplayName("Application stats")

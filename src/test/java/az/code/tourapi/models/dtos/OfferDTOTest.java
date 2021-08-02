@@ -23,7 +23,7 @@ class OfferDTOTest {
     private static Set<ConstraintViolation<OfferDTO>> violations;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         baseDTO = new OfferDTO();
