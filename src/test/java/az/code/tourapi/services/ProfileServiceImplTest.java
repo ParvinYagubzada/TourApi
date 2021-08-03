@@ -10,6 +10,7 @@ import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.repositories.OfferRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import az.code.tourapi.utils.Mappers;
+import net.sf.jasperreports.engine.JRException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
@@ -130,7 +131,7 @@ class ProfileServiceImplTest {
 
     @Test
     @DisplayName("ProfileService - makeOffer() - Valid")
-    void makeOffer() throws IOException {
+    void makeOffer() throws IOException, JRException {
         mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
         OfferDTO dto = OfferDTO.builder()
                 .description("salary").travelDates("time")

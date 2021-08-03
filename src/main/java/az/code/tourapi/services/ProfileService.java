@@ -3,6 +3,7 @@ package az.code.tourapi.services;
 import az.code.tourapi.enums.UserRequestStatus;
 import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.entities.UserRequest;
+import net.sf.jasperreports.engine.JRException;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,5 +21,5 @@ public interface ProfileService {
 
     UserRequest deleteRequest(String agencyName, String uuid);
 
-    UserRequest makeOffer(String agencyName, String uuid, OfferDTO dto) throws IOException;
+    UserRequest makeOffer(String agencyName, String uuid, OfferDTO dto) throws IOException, JRException;
 }
