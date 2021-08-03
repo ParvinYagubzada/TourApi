@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static az.code.tourapi.TourApiApplicationTests.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -141,7 +140,7 @@ class SecurityControllerTest {
         String response = "User verified.";
         when(securityService.verify(TEST_STRING, TEST_STRING)).thenReturn(response);
         mockMvc
-                .perform(get(BASE_URL + "/verify")
+                .perform(post(BASE_URL + "/verify")
                         .param("token", TEST_STRING)
                         .param("username", TEST_STRING))
                 .andExpect(content().string(response))
@@ -150,10 +149,10 @@ class SecurityControllerTest {
 
     @Test
     @DisplayName("SecurityController - verify() - NOT FOUND")
-    void verify_UserNotFount() throws Exception {
+    void verify_UserNotFound() throws Exception {
         when(securityService.verify(TEST_STRING, TEST_STRING)).thenThrow(new UserNotFound());
         mockMvc
-                .perform(get(BASE_URL + "/verify")
+                .perform(post(BASE_URL + "/verify")
                         .param("token", TEST_STRING)
                         .param("username", TEST_STRING))
                 .andExpect(status().isNotFound());
@@ -164,7 +163,7 @@ class SecurityControllerTest {
     void verify_InvalidVerificationToken() throws Exception {
         when(securityService.verify(TEST_STRING, TEST_STRING)).thenThrow(new InvalidVerificationToken());
         mockMvc
-                .perform(get(BASE_URL + "/verify")
+                .perform(post(BASE_URL + "/verify")
                         .param("token", TEST_STRING)
                         .param("username", TEST_STRING))
                 .andExpect(status().isNotAcceptable());
@@ -179,6 +178,18 @@ class SecurityControllerTest {
                         .contentType(APPLICATION_JSON_UTF8)
                         .content(TEST_STRING))
                 .andExpect(status().isOk());
+        Mockito.verify(securityService, times(1)).sendResetPasswordUrl(TEST_STRING);
+    }
+
+    @Test
+    @DisplayName("SecurityController - sendResetPasswordUrl() - NOT FOUND")
+    void sendResetPasswordUrl_UserNotFound() throws Exception {
+        doThrow(new UserNotFound()).when(securityService).sendResetPasswordUrl(TEST_STRING);
+        mockMvc
+                .perform(post(BASE_URL + "/sendResetPasswordUrl")
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(TEST_STRING))
+                .andExpect(status().isNotFound());
         Mockito.verify(securityService, times(1)).sendResetPasswordUrl(TEST_STRING);
     }
 

@@ -32,7 +32,7 @@ public class SecurityController {
         return ResponseEntity.ok(securityService.register(registerDTO));
     }
 
-    @GetMapping("/verify")
+    @PostMapping("/verify")
     public ResponseEntity<?> verify(@RequestParam String token, @RequestParam String username) {
         return ResponseEntity.ok(securityService.verify(token, username));
     }

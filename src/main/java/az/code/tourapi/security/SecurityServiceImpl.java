@@ -183,6 +183,8 @@ public class SecurityServiceImpl implements SecurityService {
                             .get("reset-url")
                             .formatted(token, user.get().getUsername())
                     ));
+        } else {
+            throw new UserNotFound();
         }
     }
 

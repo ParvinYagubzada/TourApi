@@ -1,0 +1,51 @@
+###
+//@no-log
+POST http://localhost:8000/api/v1/profile/makeOffer/{{uuid-1}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "description": "{{agency_name}}",
+  "travelDates": "04.08.2021-05.08.2021",
+  "price": 123,
+  "notes": "This offer comes from {{agency_name}} agency. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce elit velit, volutpat in vehicula eu, ullamcorper ut sem. Curabitur velit eros, varius non suscipit quis, tincidunt at lacus. Duis augue dolor, cursus ut dui at, pretium tempus odio. Mauris vehicula ex non ante scelerisque condimentum. Duis pulvinar ante feugiat interdum facilisis. Proin varius consectetur nisl a euismod. Sed lacus est, ultricies ac faucibus aliquet, tincidunt in dolor. Integer id varius justo. Quisque porta ex mauris, sed dictum tellus varius nec. Mauris ullamcorper rutrum erat at pulvinar. Quisque vehicula, tortor id hendrerit consectetur, eros elit mollis turpis, vel malesuada elit metus vitae elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse porta pulvinar mi non mollis. Maecenas non hendrerit dui, et consequat enim."
+}
+
+###
+//@no-log
+POST http://localhost:8000/api/v1/profile/makeOffer/{{uuid-2}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "description": "{{agency_name}}",
+  "travelDates": "04.08.2021-05.08.2021",
+  "price": 123,
+  "notes": "This offer comes from {{agency_name}} agency. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce elit velit, volutpat in vehicula eu, ullamcorper ut sem. Curabitur velit eros, varius non suscipit quis, tincidunt at lacus. Duis augue dolor, cursus ut dui at, pretium tempus odio. Mauris vehicula ex non ante scelerisque condimentum. Duis pulvinar ante feugiat interdum facilisis. Proin varius consectetur nisl a euismod. Sed lacus est, ultricies ac faucibus aliquet, tincidunt in dolor. Integer id varius justo. Quisque porta ex mauris, sed dictum tellus varius nec. Mauris ullamcorper rutrum erat at pulvinar. Quisque vehicula, tortor id hendrerit consectetur, eros elit mollis turpis, vel malesuada elit metus vitae elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse porta pulvinar mi non mollis. Maecenas non hendrerit dui, et consequat enim."
+}
+
+###
+//@no-log
+POST http://localhost:8000/api/v1/profile/makeOffer/{{uuid-3}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "description": "{{agency_name}}",
+  "travelDates": "04.08.2021-05.08.2021",
+  "price": 123,
+  "notes": "This offer comes from {{agency_name}} agency. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce elit velit, volutpat in vehicula eu, ullamcorper ut sem. Curabitur velit eros, varius non suscipit quis, tincidunt at lacus. Duis augue dolor, cursus ut dui at, pretium tempus odio. Mauris vehicula ex non ante scelerisque condimentum. Duis pulvinar ante feugiat interdum facilisis. Proin varius consectetur nisl a euismod. Sed lacus est, ultricies ac faucibus aliquet, tincidunt in dolor. Integer id varius justo. Quisque porta ex mauris, sed dictum tellus varius nec. Mauris ullamcorper rutrum erat at pulvinar. Quisque vehicula, tortor id hendrerit consectetur, eros elit mollis turpis, vel malesuada elit metus vitae elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse porta pulvinar mi non mollis. Maecenas non hendrerit dui, et consequat enim."
+}
+
+###
+//@no-log
+POST http://localhost:8000/api/v1/profile/makeOffer/{{uuid-4}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "description": "{{agency_name}}",
+  "travelDates": "04.08.2021-05.08.2021",
+  "price": 123,
+  "notes": "This offer comes from {{agency_name}} agency. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce elit velit, volutpat in vehicula eu, ullamcorper ut sem. Curabitur velit eros, varius non suscipit quis, tincidunt at lacus. Duis augue dolor, cursus ut dui at, pretium tempus odio. Mauris vehicula ex non ante scelerisque condimentum. Duis pulvinar ante feugiat interdum facilisis. Proin varius consectetur nisl a euismod. Sed lacus est, ultricies ac faucibus aliquet, tincidunt in dolor. Integer id varius justo. Quisque porta ex mauris, sed dictum tellus varius nec. Mauris ullamcorper rutrum erat at pulvinar. Quisque vehicula, tortor id hendrerit consectetur, eros elit mollis turpis, vel malesuada elit metus vitae elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse porta pulvinar mi non mollis. Maecenas non hendrerit dui, et consequat enim."
+}
