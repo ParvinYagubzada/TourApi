@@ -10,6 +10,7 @@ import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.repositories.OfferRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import az.code.tourapi.utils.Mappers;
+import net.sf.jasperreports.engine.JRException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.MethodName;
@@ -21,7 +22,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
@@ -31,8 +34,7 @@ import java.util.Optional;
 import static az.code.tourapi.TourApiApplicationTests.*;
 import static az.code.tourapi.enums.UserRequestStatus.EXPIRED;
 import static az.code.tourapi.utils.Util.timeFormatter;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @TestMethodOrder(MethodName.class)
@@ -49,6 +51,8 @@ class ProfileServiceImplTest {
     private Mappers mappers;
     @Mock
     private RabbitTemplate template;
+    @Mock
+    private JasperService jasperService;
     @Mock
     private Clock clock;
 
@@ -130,8 +134,7 @@ class ProfileServiceImplTest {
 
     @Test
     @DisplayName("ProfileService - makeOffer() - Valid")
-    void makeOffer() throws IOException {
-        mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
+    void makeOffer() throws IOException, JRException {
         OfferDTO dto = OfferDTO.builder()
                 .description("salary").travelDates("time")
                 .price(386).notes("sock")
@@ -143,16 +146,21 @@ class ProfileServiceImplTest {
                 .build();
         UserRequest expected = UserRequest.builder()
                 .request(Request.builder().active(true).build())
-                .offer(offer).status(UserRequestStatus.OFFER_MADE).build();
-        UserRequest param = UserRequest.builder().request(Request.builder().active(true).build()).build();
-        when(userRepo.findById(ID))
-                .thenReturn(Optional.of(param));
-        when(offerRepo.existsById(ID))
-                .thenReturn(false);
-        when(userRepo.save(expected))
-                .thenReturn(expected);
-        when(mappers.dtoToOffer(dto, AGENCY_NAME, UUID))
-                .thenReturn(offer);
+                .offer(offer).status(UserRequestStatus.OFFER_MADE)
+                .build();
+        UserRequest param = UserRequest.builder()
+                .request(Request.builder().active(true).build())
+                .build();
+        File testFile = ResourceUtils.getFile("src/test/resources/test.test");
+        assertTrue(testFile.createNewFile());
+
+        mockTime(Clock.fixed(getFixedInstant("15:00:00"), SYSTEM_DEFAULT));
+        when(userRepo.findById(ID)).thenReturn(Optional.of(param));
+        when(offerRepo.existsById(ID)).thenReturn(false);
+        when(jasperService.generateImage(dto)).thenReturn(testFile);
+        when(userRepo.save(expected)).thenReturn(expected);
+        when(mappers.dtoToOffer(dto, AGENCY_NAME, UUID)).thenReturn(offer);
+
         assertEquals(expected, service.makeOffer(AGENCY_NAME, UUID, dto));
     }
 

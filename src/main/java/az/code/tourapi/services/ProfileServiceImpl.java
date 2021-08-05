@@ -11,6 +11,7 @@ import az.code.tourapi.repositories.OfferRepository;
 import az.code.tourapi.repositories.UserRequestRepository;
 import az.code.tourapi.utils.Mappers;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRequestRepository userRepo;
     private final OfferRepository offerRepo;
     private final Mappers mappers;
+    private final JasperService jasper;
     private final Clock clock;
 
     @Value("${app.start-time}")
@@ -92,7 +94,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public UserRequest makeOffer(String agencyName, String uuid, OfferDTO dto) throws IOException {
+    public UserRequest makeOffer(String agencyName, String uuid, OfferDTO dto) throws IOException, JRException {
         if (checkTime(startTimeString, endTimeString, LocalTime.now(clock)))
             throw new OutOfWorkingHours();
         RequestId id = new RequestId(agencyName, uuid);
@@ -102,7 +104,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new RequestExpired();
         if (offerRepo.existsById(id))
             throw new MultipleOffers();
-        File image = createImage(dto);
+        File image = jasper.generateImage(dto);
         byte[] bytes = Files.readAllBytes(image.toPath());
         template.convertAndSend(REQUEST_EXCHANGE, REQUEST_KEY, new RawOffer(uuid, agencyName, bytes));
         image.delete();

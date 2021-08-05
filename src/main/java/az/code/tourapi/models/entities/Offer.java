@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class Offer {
 
     @EmbeddedId
-    RequestId id;
+    private RequestId id;
 
     @Type(type = "text")
     private String description;

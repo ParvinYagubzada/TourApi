@@ -6,6 +6,7 @@ import az.code.tourapi.models.dtos.OfferDTO;
 import az.code.tourapi.models.entities.UserRequest;
 import az.code.tourapi.services.ProfileService;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -74,7 +75,7 @@ public class ProfileController {
             @PathVariable String uuid,
             @Valid @RequestBody OfferDTO dto,
             @RequestAttribute("user") UserData user
-    ) throws IOException {
+    ) throws IOException, JRException {
         return new ResponseEntity<>(service.makeOffer(user.getAgencyName(), uuid, dto),
                 HttpStatus.CREATED);
     }

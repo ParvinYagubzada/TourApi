@@ -21,7 +21,7 @@ import javax.persistence.*;
 public class UserRequest {
 
     @EmbeddedId
-    RequestId id;
+    private RequestId id;
 
     @Enumerated(EnumType.ORDINAL)
     private UserRequestStatus status;
@@ -51,7 +51,7 @@ public class UserRequest {
     }
 
     public UserRequest setCustomer(CustomerInfo customer) {
-        this.customer = customer;
+        this.customer = customer.getPhoneNumber() == null ? customer.setUserId("-"+customer.getUserId()) : customer;
         this.status = UserRequestStatus.ACCEPTED;
         return this;
     }

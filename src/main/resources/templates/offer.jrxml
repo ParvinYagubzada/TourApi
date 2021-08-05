@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<!--suppress ALL -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Flower_Landscape_2" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c368610e-5bee-4e75-8f1e-ecda64380534">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="47"/>
+	<property name="ireport.y" value="451"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Times New Roman" fontSize="18" isBold="false"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman"/>
+	<style name="defaultStyle" isDefault="true" fontSize="14"/>
+	<subDataset name="null" uuid="21b70311-b650-4678-a39c-887917366bf0"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="travelDates" class="java.lang.String"/>
+	<field name="price" class="java.lang.Integer"/>
+	<field name="notes" class="java.lang.String"/>
+	<background>
+		<band height="550" splitType="Stretch">
+			<property name="net.sf.jasperreports.export.html.use.background.image.to.align"/>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="800" height="550" uuid="2b3eda7a-3165-4931-a54d-cf10923bfe3f"/>
+				<imageExpression><![CDATA["src/main/resources/templates/travel2.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="94" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="0" width="822" height="65" forecolor="#000000" backcolor="#D5C9FF" uuid="83f5e806-cc04-4161-87a9-07633f604bc1"/>
+				<staticText>
+					<reportElement style="Title" x="231" y="0" width="578" height="65" forecolor="#000000" uuid="f5cd9ee0-5caa-4e48-8946-c7e84d82a845"/>
+					<textElement textAlignment="Right">
+						<font size="54" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Tour agent offer]]></text>
+				</staticText>
+			</frame>
+			<staticText>
+				<reportElement style="SubTitle" x="336" y="65" width="449" height="29" uuid="0dae0af3-dd1d-4b42-b346-386af21f0689"/>
+				<textElement textAlignment="Right">
+					<font size="22" isBold="true"/>
+				</textElement>
+				<text><![CDATA[This is a sample design]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<detail>
+		<band height="400" splitType="Stretch">
+			<frame>
+				<reportElement positionType="Float" x="6" y="130" width="478" height="130" uuid="314bfd5b-7b0a-42f4-aca3-e61f0283f126"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="90" height="30" isPrintWhenDetailOverflows="true" uuid="e07201bb-a677-4dc9-a332-f94e6eca2722"/>
+					<textElement>
+						<font size="18"/>
+					</textElement>
+					<text><![CDATA[Notes]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="121" y="0" width="357" height="130" isPrintWhenDetailOverflows="true" uuid="66c93a44-9015-4ae9-bf05-b68b2420f3ef"/>
+					<textElement>
+						<font size="16"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{notes}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="6" y="60" width="478" height="70" uuid="8311a483-955e-4280-a9ac-513d7d34495b"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="100" height="40" isPrintWhenDetailOverflows="true" uuid="da404b4e-7908-40ae-8e1b-38e19d9ddc7f"/>
+					<textElement>
+						<font size="18"/>
+					</textElement>
+					<text><![CDATA[Description]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="FixRelativeToBottom" x="121" y="0" width="357" height="70" isPrintWhenDetailOverflows="true" uuid="e0e312e8-cd2f-48af-8ae8-df95c6195488"/>
+					<textElement>
+						<font size="16"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="2" y="360" width="228" height="40" uuid="8ff2baf9-b0ec-4c8a-b54a-9edd08b200cc"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="100" height="40" isPrintWhenDetailOverflows="true" uuid="b8d97db0-250a-43c8-a2f3-2fa3668c5d15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="20"/>
+					</textElement>
+					<text><![CDATA[Price]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="100" y="0" width="128" height="40" isPrintWhenDetailOverflows="true" uuid="4daa4d17-28be-4ac8-8e1e-2efbeec5f690"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="20"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="260" y="360" width="320" height="40" uuid="314bfd5b-7b0a-42f4-aca3-e61f0283f126"/>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="0" width="100" height="40" isPrintWhenDetailOverflows="true" uuid="e07201bb-a677-4dc9-a332-f94e6eca2722"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="20"/>
+					</textElement>
+					<text><![CDATA[Travel Dates]]></text>
+				</staticText>
+				<textField textAdjust="StretchHeight">
+					<reportElement positionType="Float" x="100" y="0" width="220" height="40" isPrintWhenDetailOverflows="true" uuid="66c93a44-9015-4ae9-bf05-b68b2420f3ef"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="20"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{travelDates}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="2" y="0" width="800" height="16" forecolor="#000000" backcolor="#D5C9FF" uuid="6f4fe8ef-88ca-4d5d-b46a-054826bb7893"/>
+				<textField pattern="EEEEE dd MMMMM yyyy">
+					<reportElement style="Column header" x="2" y="0" width="197" height="16" forecolor="#000000" uuid="06b3d6e8-b4a5-4251-b1fb-f640689933e8"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+</jasperReport>

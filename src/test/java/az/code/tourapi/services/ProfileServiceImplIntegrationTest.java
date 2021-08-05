@@ -41,7 +41,7 @@ class ProfileServiceImplIntegrationTest {
         when(clock.instant()).thenReturn(fixedClock.instant());
         when(clock.getZone()).thenReturn(fixedClock.getZone());
         try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("profile-service-sample-data.sql"));
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("scripts/profile-service-sample-data.sql"));
         }
     }
 

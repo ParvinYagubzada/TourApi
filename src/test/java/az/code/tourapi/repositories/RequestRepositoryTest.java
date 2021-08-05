@@ -26,7 +26,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @TestInstance(PER_CLASS)
 @DataJpaTest(showSql = false)
 @ExtendWith(MockitoExtension.class)
-@Sql(scripts = "classpath:request-repo-sample-data.sql", executionPhase = BEFORE_TEST_METHOD)
+@Sql(scripts = "classpath:scripts/request-repo-sample-data.sql", executionPhase = BEFORE_TEST_METHOD)
 class RequestRepositoryTest {
 
     @Autowired
