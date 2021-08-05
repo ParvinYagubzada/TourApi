@@ -1,9 +1,6 @@
 package az.code.tourapi.security;
 
-import az.code.tourapi.models.dtos.LoginDTO;
-import az.code.tourapi.models.dtos.LoginResponseDTO;
-import az.code.tourapi.models.dtos.RegisterDTO;
-import az.code.tourapi.models.dtos.RegisterResponseDTO;
+import az.code.tourapi.models.dtos.*;
 
 public interface SecurityService {
 
@@ -12,4 +9,10 @@ public interface SecurityService {
     RegisterResponseDTO register(RegisterDTO register);
 
     String verify(String token, String username);
+
+    void sendResetPasswordUrl(String email);
+
+    void changePassword(String username, UpdatePasswordDTO dto);
+
+    void resetPassword(ResetPasswordDTO dto);
 }

@@ -2,8 +2,7 @@ package az.code.tourapi.models.dtos;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

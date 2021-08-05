@@ -1,0 +1,74 @@
+{
+  "agent-0": {
+    "agency_name": "Global Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-1": {
+    "agency_name": "Test-1 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-2": {
+    "agency_name": "Test-2 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-3": {
+    "agency_name": "Test-3 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-4": {
+    "agency_name": "Test-4 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-5": {
+    "agency_name": "Test-5 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-6": {
+    "agency_name": "Test-6 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-7": {
+    "agency_name": "Test-7 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  },
+  "agent-8": {
+    "agency_name": "Test-8 Travel",
+    "uuid-1": "%uuid-1%",
+    "uuid-2": "%uuid-2%",
+    "uuid-3": "%uuid-3%",
+    "uuid-4": "%uuid-4%",
+    "auth_token": ""
+  }
+}

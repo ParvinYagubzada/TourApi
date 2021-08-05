@@ -5,17 +5,19 @@ import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class LoginDTO {
-    @NotNull
-    @Email
+
+    @NotNull(message = "Email must not be null")
+    @Email(message = "Email must be a well-formed email address")
     private String email;
-    @NotNull
-    @NotBlank
+
+    @NotBlank(message = "Password must not be null or empty")
+    @Size(min = 6, max = 15, message = "Password must be at 6-15 characters long")
     private String password;
 }

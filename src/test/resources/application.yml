@@ -1,0 +1,50 @@
+server:
+  port: 8000
+
+spring:
+  profiles:
+    active:
+      - test
+      - no-authConfig
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+
+  autoconfigure:
+    exclude:
+      - org.keycloak.adapters.springboot.KeycloakAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
+
+app:
+  start-time: "09:00:00"
+  end-time: "19:00:00"
+  deadline: 8
+  expiration-check-duration: PT1H
+
+keycloak:
+  auth-server-url: test
+  realm: test
+  resource: test
+  credentials.secret: test
+
+auth:
+  mails:
+    verification:
+      subject: test
+      context: test
+      urls:
+        verification-url: test
+
+  users:
+    admin:
+      username: test
+      password: test
