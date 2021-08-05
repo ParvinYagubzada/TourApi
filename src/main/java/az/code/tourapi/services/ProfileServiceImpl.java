@@ -41,7 +41,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRequestRepository userRepo;
     private final OfferRepository offerRepo;
     private final Mappers mappers;
-    private final JasperServiceImpl jasper;
+    private final JasperService jasper;
     private final Clock clock;
 
     @Value("${app.start-time}")

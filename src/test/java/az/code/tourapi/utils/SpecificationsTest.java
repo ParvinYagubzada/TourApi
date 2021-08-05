@@ -33,7 +33,7 @@ class SpecificationsTest {
     @BeforeAll
     void setUp() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("specifications-sample-data.sql"));
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("scripts/specifications-sample-data.sql"));
         }
     }
 

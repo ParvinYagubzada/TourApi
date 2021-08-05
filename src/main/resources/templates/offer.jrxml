@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<!--suppress ALL -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Flower_Landscape_2" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c368610e-5bee-4e75-8f1e-ecda64380534">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="47"/>
@@ -20,7 +21,7 @@
 			<property name="net.sf.jasperreports.export.html.use.background.image.to.align"/>
 			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
 				<reportElement x="0" y="0" width="800" height="550" uuid="2b3eda7a-3165-4931-a54d-cf10923bfe3f"/>
-				<imageExpression><![CDATA["travel2.jpg"]]></imageExpression>
+				<imageExpression><![CDATA["src/main/resources/templates/travel2.jpg"]]></imageExpression>
 			</image>
 		</band>
 	</background>
@@ -51,7 +52,7 @@
 	<detail>
 		<band height="400" splitType="Stretch">
 			<frame>
-				<reportElement positionType="Float" x="6" y="160" width="478" height="130" uuid="314bfd5b-7b0a-42f4-aca3-e61f0283f126"/>
+				<reportElement positionType="Float" x="6" y="130" width="478" height="130" uuid="314bfd5b-7b0a-42f4-aca3-e61f0283f126"/>
 				<staticText>
 					<reportElement positionType="Float" x="0" y="0" width="90" height="30" isPrintWhenDetailOverflows="true" uuid="e07201bb-a677-4dc9-a332-f94e6eca2722"/>
 					<textElement>
@@ -68,7 +69,7 @@
 				</textField>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" x="6" y="60" width="478" height="100" uuid="8311a483-955e-4280-a9ac-513d7d34495b"/>
+				<reportElement positionType="Float" x="6" y="60" width="478" height="70" uuid="8311a483-955e-4280-a9ac-513d7d34495b"/>
 				<staticText>
 					<reportElement positionType="Float" x="0" y="0" width="100" height="40" isPrintWhenDetailOverflows="true" uuid="da404b4e-7908-40ae-8e1b-38e19d9ddc7f"/>
 					<textElement>
@@ -77,7 +78,7 @@
 					<text><![CDATA[Description]]></text>
 				</staticText>
 				<textField textAdjust="StretchHeight">
-					<reportElement positionType="FixRelativeToBottom" x="121" y="0" width="357" height="100" isPrintWhenDetailOverflows="true" uuid="e0e312e8-cd2f-48af-8ae8-df95c6195488"/>
+					<reportElement positionType="FixRelativeToBottom" x="121" y="0" width="357" height="70" isPrintWhenDetailOverflows="true" uuid="e0e312e8-cd2f-48af-8ae8-df95c6195488"/>
 					<textElement>
 						<font size="16"/>
 					</textElement>

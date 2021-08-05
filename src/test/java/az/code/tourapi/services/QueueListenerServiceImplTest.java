@@ -1,9 +1,6 @@
 package az.code.tourapi.services;
 
-import az.code.tourapi.models.entities.Request;
-import az.code.tourapi.models.entities.RequestId;
-import az.code.tourapi.models.entities.User;
-import az.code.tourapi.models.entities.UserRequest;
+import az.code.tourapi.models.entities.*;
 import az.code.tourapi.models.rabbit.AcceptedOffer;
 import az.code.tourapi.models.rabbit.RawRequest;
 import az.code.tourapi.repositories.RequestRepository;
@@ -33,7 +30,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @SuppressWarnings("SpellCheckingInspection")
-@Sql(scripts = "classpath:truncate-data.sql", executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:scripts/truncate-data.sql", executionPhase = AFTER_TEST_METHOD)
 class QueueListenerServiceImplTest {
 
     @Autowired
@@ -53,14 +50,14 @@ class QueueListenerServiceImplTest {
     @BeforeAll
     void setUp() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("triggers.sql"));
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("scripts/triggers.sql"));
         }
     }
 
     @AfterAll
     void tearDown() throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(conn, new ClassPathResource("drop-triggers.sql"));
+            ScriptUtils.executeSqlScript(conn, new ClassPathResource("scripts/drop-triggers.sql"));
         }
     }
 
@@ -99,9 +96,10 @@ class QueueListenerServiceImplTest {
                 .firstName("test1").lastName("test2")
                 .userId("12345678")
                 .build();
+        CustomerInfo expected = mappers.acceptedToCustomer(offer).setUserId("-12345678");
         service.listenAcceptances(offer);
         Optional<UserRequest> request = userRequestRepo.findById(new RequestId(agencyName, UUID));
         assertTrue(request.isPresent());
-        assertEquals(mappers.acceptedToCustomer(offer), request.get().getCustomer());
+        assertEquals(expected, request.get().getCustomer());
     }
 }

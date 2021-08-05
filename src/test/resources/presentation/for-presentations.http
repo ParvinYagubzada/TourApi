@@ -8,7 +8,7 @@ Content-Type: application/json
   "description": "{{agency_name}}",
   "travelDates": "04.08.2021-05.08.2021",
   "price": 123,
-  "notes": "This offer comes from {{agency_name}} agency."
+  "notes": "This offer comes from {{agency_name}} agency. It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."
 }
 
 ###

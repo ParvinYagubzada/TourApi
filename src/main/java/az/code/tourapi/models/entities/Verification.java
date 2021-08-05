@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = "verifications")
 public class Verification {
     @Id
-    String token;
+    private String token;
     @OneToOne
     @JoinColumn(name = "username", referencedColumnName = "username")
     private User user;
